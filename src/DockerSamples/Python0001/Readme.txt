@@ -1,5 +1,8 @@
 ﻿#Based on
 https://docs.docker.com/get-started/part2/
+https://docs.docker.com/get-started/part3/
+
+------------------------------------------------------------------------------------------------------ Part 2: Containers
 
 #Steps
 cd to target directory
@@ -61,3 +64,33 @@ docker run username/repository:tag                  # Run image from a registry
 # Open browser
 http://localhost:4000/
 http://172.17.0.2:4000/
+
+------------------------------------------------------------------------------------------------------ Part 3: Services
+
+## Init docker swarm
+docker swarm init
+
+## Run docker images with specified name
+docker stack deploy -c docker-compose.yml getstartedlab
+
+## Get service name
+docker service ls
+docker stack services getstartedlab # Alternatively, you can run
+docker service ps getstartedlab_web
+docker stack ps getstartedlab
+
+## Take down the app and swarm
+
+docker stack rm getstartedlab
+docker swarm leave --force
+
+## Cheat Sheet
+
+docker stack ls                                 # List stacks or apps
+docker stack deploy -c <composefile> <appname>  # Run the specified Compose file
+docker service ls								# List running services associated with an app
+docker service ps <service>						# List tasks associated with an app
+docker inspect <task or container>              # Inspect task or container
+docker container ls -q                          # List container IDs
+docker stack rm <appname>                       # Tear down an application
+docker swarm leave --force						# Take down a single node swarm from the manager
