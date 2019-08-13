@@ -2,6 +2,7 @@
 https://docs.docker.com/get-started/part2/
 https://docs.docker.com/get-started/part3/
 https://docs.docker.com/get-started/part4/
+https://docs.docker.com/get-started/part5/
 
 ------------------------------------------------------------------------------------------------------ Part 2: Containers
 
@@ -76,7 +77,8 @@ docker stack deploy -c docker-compose.yml getstartedlab
 
 ## Get service name
 docker service ls
-docker stack services getstartedlab # Alternatively, you can run
+docker stack services getstartedlab 
+# Alternatively, you can run
 docker service ps getstartedlab_web
 docker stack ps getstartedlab
 
@@ -98,15 +100,45 @@ docker swarm leave --force						# Take down a single node swarm from the manager
 
 ------------------------------------------------------------------------------------------------------ Part 4: Swarms
 
+## Resources
+https://docs.docker.com/machine/drivers/hyper-v/
+
+## Info
+Run cmd as an administrator
+
 ## Create a cluster
 
-docker-machine create -d hyperv --hyperv-virtual-switch "MySwitchForDocker" myvm1
-docker-machine create -d hyperv --hyperv-disk-size "50000" --hyperv-cpu-count "4" --hyperv-memory "1" --hyperv-virtual-switch "MySwitchForDocker" myvm2
+docker-machine create -d hyperv --hyperv-virtual-switch "MySwitchForDocker" myvm1docker
+docker-machine create -d hyperv --hyperv-disk-size "50000" --hyperv-cpu-count "4" --hyperv-memory "1" --hyperv-virtual-switch "MySwitchForDocker" myvm2docker
 
 ## List the VMS
 docker-machine ls
+docker-machine active
 
-TODO: needs more work VMS didn't work
+## Initialize Swarm
+docker-machine ssh myvm1docker "docker swarm init --advertise-addr 10.0.0.83"
+
+## Add Nodes
+docker-machine ssh myvm2docker "docker swarm join --token SWMTKN-1-0g8r9hyeuo6fpmw1s0s4q484d3qrkgrf1401ur59z9r09jlism-8sa7c1gyzq0yxwuxurvyp2nb3 10.0.0.83:2377"
+
+## View nodes in swarm
+docker-machine ssh myvm1docker "docker node ls"
+
+## Configure ad docker-machine shell to swarm manager
+docker-machine env myvm1docker
+@FOR /f "tokens=*" %i IN ('docker-machine env myvm1docker') DO @%i
+
+## Deploy the app on the swarm manager
+docker stack deploy -c docker-compose.yml getstartedlab
+docker stack ps getstartedlab
+
+## Cleanup and reboot
+docker stack rm getstartedlab
+docker-machine ssh myvm2docker "docker swarm leave"
+docker-machine ssh myvm1docker "docker swarm leave"
+
+## Remove VM
+docker-machine rm -f vmnamehere
 
 ## Cheat Sheet
 
@@ -131,3 +163,7 @@ docker-machine ssh myvm1 "docker stack deploy -c <file> <app>"										# Deploy
 eval $(docker-machine env -u)																		# Disconnect shell from VMs, use native docker
 docker-machine stop $(docker-machine ls -q)															# Stop all running VMs
 docker-machine rm $(docker-machine ls -q)															# Delete all VMs and their disk images
+
+------------------------------------------------------------------------------------------------------ Part 5: Stacks
+
+TODO:
