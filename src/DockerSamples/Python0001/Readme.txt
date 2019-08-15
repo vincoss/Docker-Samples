@@ -102,6 +102,7 @@ docker swarm leave --force						# Take down a single node swarm from the manager
 
 ## Resources
 https://docs.docker.com/machine/drivers/hyper-v/
+NOTE: Ensure that image is already created from Part 1:
 
 ## Info
 Run cmd as an administrator
@@ -109,22 +110,22 @@ Run cmd as an administrator
 ## Create a cluster
 
 docker-machine create -d hyperv --hyperv-virtual-switch "MySwitchForDocker" myvm1docker
-docker-machine create -d hyperv --hyperv-disk-size "50000" --hyperv-cpu-count "4" --hyperv-memory "1" --hyperv-virtual-switch "MySwitchForDocker" myvm2docker
+docker-machine create -d hyperv --hyperv-virtual-switch "MySwitchForDocker" myvm2docker
 
 ## List the VMS
 docker-machine ls
 docker-machine active
 
 ## Initialize Swarm
-docker-machine ssh myvm1docker "docker swarm init --advertise-addr 10.0.0.83"
+docker-machine ssh myvm1docker "docker swarm init --advertise-addr 10.0.0.14"
 
-## Add Nodes
-docker-machine ssh myvm2docker "docker swarm join --token SWMTKN-1-0g8r9hyeuo6fpmw1s0s4q484d3qrkgrf1401ur59z9r09jlism-8sa7c1gyzq0yxwuxurvyp2nb3 10.0.0.83:2377"
+## Add Nodes (Copy the the output from previous step)
+docker-machine ssh myvm2docker "docker swarm join --token SWMTKN-1-4iloil3lwzcmfqth7f6x9iinvo02dtoq3y3kwi176pyprb0988-96ri0o01bcccabqtkvde5vijy 10.0.0.14:2377"
 
 ## View nodes in swarm
 docker-machine ssh myvm1docker "docker node ls"
 
-## Configure ad docker-machine shell to swarm manager
+## Configure ad docker-machine shell to swarm manager, make the machine active. check with 'docker-machine active'
 docker-machine env myvm1docker
 @FOR /f "tokens=*" %i IN ('docker-machine env myvm1docker') DO @%i
 
@@ -132,13 +133,21 @@ docker-machine env myvm1docker
 docker stack deploy -c docker-compose.yml getstartedlab
 docker stack ps getstartedlab
 
-## Cleanup and reboot
+## Restart a machine
+docker-machine start myvm1docker
+
+## Cleanup
 docker stack rm getstartedlab
 docker-machine ssh myvm2docker "docker swarm leave"
 docker-machine ssh myvm1docker "docker swarm leave"
 
 ## Remove VM
-docker-machine rm -f vmnamehere
+docker-machine rm -f myvm1docker
+docker-machine rm -f myvm2docker
+
+## Browse
+http://10.0.0.14/
+http://10.0.0.106/
 
 ## Cheat Sheet
 
