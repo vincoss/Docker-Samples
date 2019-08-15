@@ -149,6 +149,9 @@ docker-machine rm -f myvm2docker
 http://10.0.0.14/
 http://10.0.0.106/
 
+http://10.0.0.14:8080/		# docker visualizer
+http://10.0.0.106:8080/		# docker visualizer
+
 ## Cheat Sheet
 
 docker-machine create --driver virtualbox myvm1								# Create a VM (Mac, Win7, Linux)
@@ -175,4 +178,29 @@ docker-machine rm $(docker-machine ls -q)															# Delete all VMs and the
 
 ------------------------------------------------------------------------------------------------------ Part 5: Stacks
 
-TODO:
+NOTE: Ensure that all related containers are removed
+
+# Steps from Part 2:
+docker swarm leave --force		
+docker swarm init
+docker build --tag=friendlyhello_v .
+docker image ls
+
+## Deploy the service
+docker stack deploy -c docker-compose.yml getstartedlab
+
+## Verify services are running
+docker service ls
+
+## Verify running VMs
+docker-machine ls
+
+## Browse
+http://10.0.0.14/
+http://10.0.0.106/
+
+http://10.0.0.14:8080/		# docker visualizer
+http://10.0.0.106:8080/		# docker visualizer
+
+------------------------------------------------------------------------------------------------------ Part 6: Deply your app
+
