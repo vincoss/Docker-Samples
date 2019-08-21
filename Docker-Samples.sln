@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerSamples", "src\Docker
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Default", "Default", "{950FF774-9118-4925-975C-0C14AE587618}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docker_DevResources", "src\Docker_DevResources\Docker_DevResources.csproj", "{B073215D-DFB8-44D7-B399-497BEED25298}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{ABA2F022-B85E-46C2-A88E-63FE3CE555E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABA2F022-B85E-46C2-A88E-63FE3CE555E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABA2F022-B85E-46C2-A88E-63FE3CE555E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B073215D-DFB8-44D7-B399-497BEED25298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B073215D-DFB8-44D7-B399-497BEED25298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B073215D-DFB8-44D7-B399-497BEED25298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B073215D-DFB8-44D7-B399-497BEED25298}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

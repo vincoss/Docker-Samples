@@ -1,0 +1,46 @@
+
+SQL Server 2019
+
+
+---------------------------------------------------------- Docker information
+https://hub.docker.com/_/microsoft-mssql-server
+https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-2017
+https://www.cathrinewilhelmsen.net/2018/12/02/sql-server-2019-docker-container/
+
+#Pull
+docker pull mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu
+
+#Start (SQL Server Express) 
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=z8W#cT0_qp" -e "MSSQL_PID=Express" -p 1433:1433 --name MsSql2019Express -v C:/temp/sql -d mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=z8W#cT0_qp" -e "MSSQL_PID=Express" -p 11433:1433 --name MsSql2019Express -v C:/temp/sql -d mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=z8W#cT0_qp" -e "MSSQL_PID=Express" -e "MSSQL_BACKUP_DIR=/var/opt/mssql/data/backup" -e "MSSQL_DATA_DIR=/var/opt/mssql/data/data" -e "MSSQL_LOG_DIR=/var/opt/mssql/data/logs" -p 11433:1433 --name MsSql2019Express -v C:\Docker\SQL:/var/opt/mssql/data -d mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu
+
+#Connect inside container with SqlCmd tool
+docker exec -it MsSql2019Express /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P z8W#cT0_qp
+docker exec -it MsSql2019Express /opt/mssql-tools/bin/sqlcmd -S 172.17.0.2 -U sa -P z8W#cT0_qp
+
+#Connect outside container with SqlCmd tool
+sqlcmd -S localhost,11433 -U sa -P z8W#cT0_qp
+
+#Connect with SSMS
+localhost,11433
+
+###Create a named storage volume
+	https://docs.docker.com/storage/volumes/
+#create
+	docker volume create Volume0001
+#list
+	docker volume ls
+#inspect
+	docker volume inspect Volume0001
+#remove
+	docker volume rm Volume0001
+#view volume data
+	docker exec MsSql2019Express ls /var/opt/mssql/data
+
+------------------------- Docker
+
+docker ps -a
+docker volume ls
+docker inspect <containerID|Name>
+docker container prune -f
