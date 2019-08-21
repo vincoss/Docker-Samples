@@ -6,9 +6,9 @@ https://docs.docker.com/get-started/part5/
 
 ------------------------------------------------------------------------------------------------------ Part 2: Containers
 
-#Steps
-cd to target directory
-dir to list files
+##Steps
+cd	# to target directory
+dir # to list files
 
 # Create image using this directory's Dockerfile
 docker build --tag=friendlyhello_v .

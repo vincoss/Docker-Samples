@@ -9,12 +9,12 @@ services:
       - MYSQL_PASSWORD=kimaip
       - MYSQL_ROOT_PASSWORD=changeme
     volumes:
-        - ./mysql:/var/lib/mysql
+        - containerdata:/var/lib/mysql
     command: --default-storage-engine innodb
     restart: always
 
   kimai:
-    image: kimai/kimai2:latest
+    image: kimai/kimai2:apache-debian-master
     environment:
         - APP_ENV=prod
         - DATABASE_URL=mysql://kimaiu:kimaip@mydb/kimai
@@ -25,3 +25,15 @@ services:
     ports:
         - 8001:8001
     restart: always
+
+  postfix:
+    image: catatnight/postfix
+    environment:
+      maildomain: neontribe.co.uk
+      smtp_user: kimai:kimai
+    restart: unless-stopped
+    restart: always
+
+volumes:
+  containerdata:
+    external: true
