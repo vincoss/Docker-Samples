@@ -6,13 +6,17 @@ services:
     container_name: jenkins
     volumes:
       - jenkins_home:/var/jenkins_home
-      - ./jenkins.yaml:/var/jenkins_home/jenkins.yaml
     environment:
-        - JENKINS_URL=http://jenkins:8080
+        - JENKINS_USER=admin
+        - JENKINS_PASS=admin
+        - JENKINS_URL=http://jenkins:8111
     ports:
-      - '8080:8080'
-      - '50000:50000'
+      - '8111:8080'   #client:server
+      - '50000:50000' #client:server
     restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
 
 volumes:
   jenkins_home:
