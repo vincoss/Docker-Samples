@@ -1,9 +1,10 @@
 version: '3.7'
 services:
 
-  server:
+  teamcity:
     image: jetbrains/teamcity-server:latest-nanoserver
-    container_name: TeamCityServer
+    container_name: teamcity
+    hostname: teamcity
     volumes:
       - teamcityserver_data:C:\ProgramData\JetBrains\TeamCity
       - teamcityserver_logs:C:\TeamCity\logs
@@ -11,6 +12,8 @@ services:
       - TEAMCITY_SERVER_MEM_OPTS="-Xmx750m"
     ports:
       - '8111:8111'   #client:server
+   # extra_hosts:
+   #   - "teamcity:162.242.195.82"
     restart: always
 
 volumes:

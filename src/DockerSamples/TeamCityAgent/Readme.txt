@@ -22,7 +22,7 @@ docker ps -a
 docker-compose down
 
 ## Error logs
-docker logs --tail 50 --follow --timestamps jenkins
+docker logs --tail 50 --follow --timestamps TeamCityAgent0001
 
 ## Browse
 http://localhost:8111/

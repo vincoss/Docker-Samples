@@ -1,25 +1,17 @@
 version: '3.7'
 services:
 
-  agent:
+  TeamCityAgent0001:
     image: jetbrains/teamcity-minimal-agent:latest-nanoserver
     container_name: TeamCityAgent0001
     volumes:
       - teamcityagent0001_data:C:/BuildAgent/conf
     environment:
       - AGENT_NAME=TeamCityAgent0001
-      - SERVER_URL=TeamCityServer:8111
+      - SERVER_URL=http://teamcity:8111
       - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
     ports:
       - '9090:9090'   #client:server
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
     restart: always
 
 volumes:
