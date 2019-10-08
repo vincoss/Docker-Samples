@@ -7,6 +7,8 @@ services:
     volumes:
       - teamcityserver_data:C:\ProgramData\JetBrains\TeamCity
       - teamcityserver_logs:C:\TeamCity\logs
+    environment:
+      - TEAMCITY_SERVER_MEM_OPTS="-Xmx750m"
     ports:
       - '8111:8111'   #client:server
     restart: always
