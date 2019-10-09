@@ -20,9 +20,9 @@ services:
     restart: always
     networks:
       - isolated_nw
-    build:
-      context: .
-      dockerfile: Dockerfile
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
 
 volumes:
   teamcityagent0001_data:

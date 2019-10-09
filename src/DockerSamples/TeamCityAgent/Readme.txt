@@ -38,5 +38,15 @@ docker cp jenkins:/var/jenkins_home/secrets/initialAdminPassword C:\Temp\Jenkins
 1. create volume
 docker volume create --name=teamcityagent0001_data
 
+2. create network (if not exists)
+docker network create --driver nat isolated_nw
+
 2. compose container
 docker-compose up -d
+
+
+
+
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
