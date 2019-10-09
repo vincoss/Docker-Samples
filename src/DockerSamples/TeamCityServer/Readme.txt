@@ -1,5 +1,6 @@
 ﻿##Based on
 https://hub.docker.com/r/jetbrains/teamcity-server/
+https://docs.docker.com/compose/compose-file/
 https://www.ntweekly.com/2018/04/02/copy-data-files-windows-container/
 
 ## Get latest image
@@ -8,6 +9,9 @@ docker pull jetbrains/teamcity-server:latest-nanoserver
 ## Create volume
 docker volume create --name=teamcityserver_data
 docker volume create --name=teamcityserver_logs
+
+## Create network
+docker network create --driver nat isolated_nw
 
 ## Build custom docker image
 docker-compose build

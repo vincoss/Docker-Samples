@@ -1,23 +1,30 @@
 version: '3.7'
 services:
 
-  teamcity:
-    image: jetbrains/teamcity-server:latest-nanoserver
-    container_name: teamcity
-    hostname: teamcity
+  teamcityserver:
+    #image: jetbrains/teamcity-server:latest-nanoserver
+    image: jetbrains/teamcity-server
+    container_name: teamcityserver
+    hostname: teamcityserver
     volumes:
       - teamcityserver_data:C:\ProgramData\JetBrains\TeamCity
       - teamcityserver_logs:C:\TeamCity\logs
     environment:
       - TEAMCITY_SERVER_MEM_OPTS="-Xmx750m"
+    expose:
+      - 8111
     ports:
       - '8111:8111'   #client:server
-   # extra_hosts:
-   #   - "teamcity:162.242.195.82"
     restart: always
+    networks:
+      - isolated_nw
 
 volumes:
   teamcityserver_data:
     external: true
   teamcityserver_logs:
+    external: true
+ 
+networks:
+  isolated_nw:
     external: true

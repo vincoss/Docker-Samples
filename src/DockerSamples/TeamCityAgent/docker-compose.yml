@@ -2,18 +2,28 @@ version: '3.7'
 services:
 
   TeamCityAgent0001:
-    image: jetbrains/teamcity-minimal-agent:latest-nanoserver
+    #image: jetbrains/teamcity-minimal-agent:latest-nanoserver
+    image: jetbrains/teamcity-minimal-agent
     container_name: TeamCityAgent0001
+    hostname: TeamCityAgent0001
     volumes:
       - teamcityagent0001_data:C:/BuildAgent/conf
     environment:
       - AGENT_NAME=TeamCityAgent0001
-      - SERVER_URL=http://teamcity:8111
+      - SERVER_URL=http://teamcityserver:8111
       - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
+    expose:
+      - 8111
     ports:
       - '9090:9090'   #client:server
     restart: always
+    networks:
+      - isolated_nw
 
 volumes:
   teamcityagent0001_data:
+    external: true
+
+networks:
+  isolated_nw:
     external: true

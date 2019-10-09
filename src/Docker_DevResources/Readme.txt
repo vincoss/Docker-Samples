@@ -33,6 +33,9 @@ docker container stop $(docker container ls -a -q) 	# powershell FOR /f "tokens=
 ## Remove all containers
 docker container rm $(docker container ls -a -q) 	# powershell FOR /f "tokens=*" %i IN ('docker ps -q') DO docker rm %i
 	
+## Prune all unused volumes (force)
+docker volume prune -f
+
 ## Docker build the image
 docker build --tag=lowercasetagname .
 
