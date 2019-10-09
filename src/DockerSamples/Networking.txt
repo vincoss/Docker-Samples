@@ -1,0 +1,24 @@
+﻿##Based on
+https://docs.docker.com/compose/networking
+https://docs.docker.com/compose/compose-file/#networks
+https://docs.docker.com/compose/networking/#using-a-pre-existing-network
+https://docs.docker.com/v17.09/engine/userguide/networking/#default-networks
+
+## List the docker network.
+docker network ls
+
+## Create two containers.
+docker run -d -it --name=container1 centos
+docker run -d -it --name=container2 centos
+
+## Create new network
+docker network create --driver nat isolated_nw
+
+## Connect container2 to the new network.
+docker network connect isolated_nw container2
+
+## Inspect network
+docker network inspect isolated_nw
+
+## Remove network
+docker network rm isolated_nw

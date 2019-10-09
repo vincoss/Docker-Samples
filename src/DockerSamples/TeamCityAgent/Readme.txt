@@ -1,9 +1,11 @@
 ﻿##Based on
-https://hub.docker.com/r/jetbrains/teamcity-server/
+https://hub.docker.com/r/jetbrains/teamcity-agent
+https://hub.docker.com/_/microsoft-dotnet-framework
+https://hub.docker.com/_/microsoft-dotnet-core-sdk/
 
 
 ## Get latest image
-docker pull jetbrains/teamcity-minimal-agent:latest-nanoserver
+docker pull jetbrains/teamcity-minimal-agent:latest-windowsservercore
 
 ## Create volume
 docker volume create --name=teamcityagent0001_data
@@ -12,8 +14,9 @@ docker volume create --name=teamcityagent0001_data
 docker-compose build
 docker-compose up --build
 
-## Compose
+## Compose (scale agents)
 docker-compose up -d
+docker-compose up -d scale 2 # todo review
 
 ## Show containers
 docker ps -a
@@ -29,3 +32,11 @@ http://localhost:8111/
 
 ## Get default password
 docker cp jenkins:/var/jenkins_home/secrets/initialAdminPassword C:\Temp\Jenkins
+
+------------------------------------------------- Create agent
+
+1. create volume
+docker volume create --name=teamcityagent0001_data
+
+2. compose container
+docker-compose up -d

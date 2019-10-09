@@ -1,5 +1,5 @@
 ﻿##Based on
-https://hub.docker.com/r/jetbrains/teamcity-server/
+https://hub.docker.com/r/jetbrains/teamcity-server
 https://docs.docker.com/compose/compose-file/
 https://www.ntweekly.com/2018/04/02/copy-data-files-windows-container/
 
@@ -38,3 +38,15 @@ docker cp TeamCityServer:C:\TeamCity\logs C:\Temp\TeamCityServer\logs
 
 #Location on host machine (windows)
 C:\ProgramData\Docker\volumes
+
+------------------------------------------------- Create teamcity server
+
+1. create volume
+docker volume create --name=teamcityserver_data
+docker volume create --name=teamcityserver_logs
+
+2. create network
+docker network create --driver nat isolated_nw
+
+3. compose container
+docker-compose up -d

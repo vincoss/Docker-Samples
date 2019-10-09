@@ -3,7 +3,8 @@ services:
 
   TeamCityAgent0001:
     #image: jetbrains/teamcity-minimal-agent:latest-nanoserver
-    image: jetbrains/teamcity-minimal-agent
+    #image: jetbrains/teamcity-minimal-agent
+    image: jetbrains/teamcity-agent:latest-windowsservercore
     container_name: TeamCityAgent0001
     hostname: TeamCityAgent0001
     volumes:
@@ -19,6 +20,9 @@ services:
     restart: always
     networks:
       - isolated_nw
+    build:
+      context: .
+      dockerfile: Dockerfile
 
 volumes:
   teamcityagent0001_data:
