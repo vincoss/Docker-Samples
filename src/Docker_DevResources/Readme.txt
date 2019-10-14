@@ -42,6 +42,11 @@ docker build --tag=lowercasetagname .
 ## View volume data
 docker exec jenkins ls /var/jenkins_home
 
+## Open PowerShell
+docker exec -it containerName powershell
+docker attach containerName
+exit	#out fo the container
+
 ---------------------------------------------------------------- Switch containers Linux|Windows
 ##Swicht containers to linux
 & $Env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon

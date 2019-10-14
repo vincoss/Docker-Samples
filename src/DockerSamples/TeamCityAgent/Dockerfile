@@ -11,20 +11,44 @@
 #limit teamcity memory and cpu
 #limit agent memory and cpu
 #sql 
-#notepad++
 #powershell
 #configure admin center
 
+# escape=`
+#FROM microsoft/dotnet-framework-build:4.7.1-windowsservercore-ltsc2016  
+#SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-FROM teamcity-agent:latest-windowsservercore-1809 AS buildagent
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+#FROM jetbrains/teamcity-agent AS buildagent
 
+# Install 7z
+RUN [Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls' ; \
+    Invoke-WebRequest https://www.7-zip.org/a/7z1900-x64.msi -OutFile 7z.msi; \
+    Start-Process msiexec -Wait -ArgumentList /q, /i, 7z.msi ; \
+    Remove-Item -Force 7z.msi
+
+
+#
+#
+#SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+#
+#
+#FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2
+
+# Install Chocolatey
+#RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:ChocolateyUseWindowsCompression='false'; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+#RUN powershell add-windowsfeature web-asp-net45 \
+#&& choco install dotnet4.7 --allow-empty-checksums -y \
+
+
+
+# Tools
+#FROM mcr.microsoft.com/powershell:latest
 
 # SKDs
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0
+#FROM mcr.microsoft.com/dotnet/framework/sdk:4.8
+#FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+#FROM mcr.microsoft.com/dotnet/core/sdk:3.0
 ##FROM mcr.microsoft.com/mssql-tools	thats linux
 ##FROM python
 
@@ -42,4 +66,4 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.0
 
 
 # Path
-RUN setx /M Path "C:\Program Files\7-Zip"
+#RUN setx /M Path "C:\Program Files\7-Zip"

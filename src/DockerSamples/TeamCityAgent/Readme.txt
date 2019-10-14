@@ -5,14 +5,14 @@ https://hub.docker.com/_/microsoft-dotnet-core-sdk/
 
 
 ## Get latest image
-docker pull jetbrains/teamcity-minimal-agent:latest-windowsservercore
+docker pull jetbrains/teamcity-agent
 
 ## Create volume
 docker volume create --name=teamcityagent0001_data
 
 ## Build custom docker image
 docker-compose build
-docker-compose up --build
+docker-compose up --build -t jetbrains/teamcity-agent:sdk-1.0.0  
 
 ## Compose (scale agents)
 docker-compose up -d
