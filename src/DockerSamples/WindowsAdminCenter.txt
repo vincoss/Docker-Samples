@@ -4,7 +4,7 @@ https://docs.microsoft.com/en-us/windows-server/manage/windows-admin-center/over
 Use Windows Admin Center to View docker containers.
 
 1. Open WAC
-2. Settngs --> Extensions
+2. Settings --> Extensions
 3. Install Extension Containers
-4. Connect to machine that host docker (server or windows 10 PC)
+4. Connect to machine that host docker (server or windows 10 PC) bneltp017
 5. Go to container section
