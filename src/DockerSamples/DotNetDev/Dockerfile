@@ -5,22 +5,26 @@ FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 AS Basefile
 ## Enable https
 COPY createUser.ps1 C:/temp/
 COPY createPasswordFile.ps1 C:/temp/
+COPY addAccountToLogonAsService.ps1 C:/temp/
 COPY passwordEncrypted.txt C:/temp/
 RUN powershell -File .\temp\createUser.ps1
 
 # Install packages
 RUN powershell Set-ExecutionPolicy Bypass -Scope Process -Force; iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+RUN choco install -y jdk8;
+RUN choco install -y visualstudio2017buildtools;
+##RUN choco install -y ssdt17; #does not work
+RUN choco install teamcityagent -y -v -force --allow-empty-checksums --package-parameters="'serverUrl=http://teamcity:8111/ serviceAccount=.\\TeamCityAgentUser serviceAccountPassword=()_password12'";
 
 #RUN choco install 7zip.install -y; `
     #choco install git -y; `
 	#choco install dotnetcore-sdk -y; `
-	#choco install teamcityagent --params 'serverUrl=http://teamcity:8111/ serviceAccount=TeamCityAgentUser serviceAccountPassword=()_2ac!Kw&3!' -y;
-#
+	#choco.exe install teamcityagent -y -force --allow-empty-checksums --package-parameters="'serverUrl=http://teamcity:8111/ serviceAccount=.\\TeamCityAgentUser serviceAccountPassword=()_password'";
+	#choco.exe install teamcityagent -y -force --allow-empty-checksums --package-parameters="' agentDir=C:\\TeamCity-Agent\\ serverUrl=http://teamcity:8111/'";
+#--package-parameters
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-#RUN Install-PackageProvider -Name chocolatey -RequiredVersion 2.8.5.130 -Force; `
-	#Install-Package -Name git -RequiredVersion 2.23.0 -Force; `
-	#Install-Package -Name 7zip.install -RequiredVersion 19.0.0.0 -Force;
+
 
 #RUN Install-PackageProvider -Name chocolatey -RequiredVersion 2.8.5.130 -Force; `  
     #Install-Package -Name microsoft-build-tools -RequiredVersion 15.0.26228.0 -Force; `
