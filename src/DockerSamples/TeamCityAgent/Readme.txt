@@ -39,7 +39,8 @@ docker cp jenkins:/var/jenkins_home/secrets/initialAdminPassword C:\Temp\Jenkins
 docker volume create --name=teamcityagent0001_data
 
 2. create network (if not exists)
-docker network create --driver nat isolated_nw
+docker network create --driver transparent isolated_nw
+docker network create -driver macvlan --subnet=100.98.26.43/24 --gateway=100.98.26.1  -o parent=eth0 pub_net
 
 2. compose container
 docker-compose up -d
