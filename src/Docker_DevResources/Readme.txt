@@ -51,7 +51,7 @@ exit	#out fo the container
 
 ## Display and remove dangling images
 docker images -f “dangling=true” -q
-docker rmi $(docker images -f “dangling=true” -q)
+docker rmi $(docker images -f "dangling=true" -q)
 
 ---------------------------------------------------------------- Switch containers Linux|Windows
 ##Swicht containers to linux
