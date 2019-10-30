@@ -17,7 +17,7 @@ docker network create --driver nat isolated_nw
 docker-compose build
 docker-compose up --build
 
-## Compose
+## Compose & destroy
 docker-compose up -d
 
 ## Show containers
@@ -28,6 +28,9 @@ docker-compose down
 
 ## Error logs
 docker logs --tail 50 --follow --timestamps TeamCityServer
+
+## Open PowerShell to running container
+docker exec -it containerName powershell
 
 ## Browse
 http://localhost:8111/
@@ -45,8 +48,8 @@ C:\ProgramData\Docker\volumes
 docker volume create --name=teamcityserver_data
 docker volume create --name=teamcityserver_logs
 
-2. create network
-docker network create --driver nat isolated_nw
+2. create network (NOTE: Uses switch created from Hyper-v: b3f21147276e		External-Primary-Virtual-Switch		transparent		local)
+docker network create --driver transparent isolated_nw
 
-3. compose container
+3. run container & destroy
 docker-compose up -d
