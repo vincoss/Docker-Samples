@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+
+  teamcityserver:
+    image: mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu
+    container_name: sqlserverexpress2019
+    hostname: sqlserverexpress2019
+    volumes:
+      - sqlserverexpress2019_data:/var/opt/mssql/data
+    environment:
+      - ACCEPT_EULA="Y"
+      - ACCEPT_EULA="Express"
+      - SA_PASSWORD="75AC0ADE-3848-43AA-9545-E1A0ACE2FF4F"
+      - MSSQL_BACKUP_DIR="/var/opt/mssql/data/backup"
+      - MSSQL_DATA_DIR="/var/opt/mssql/data/data"
+      - MSSQL_LOG_DIR="/var/opt/mssql/data/logs"
+    expose:
+      - 1433
+    ports:
+      - '1433:1433'   #client:server
+    restart: always
+    networks:
+      - isolated_nw
+
+volumes:
+  sqlserverexpress2019_data:
+    external: true
+ 
+networks:
+  isolated_nw:
+    external: true
