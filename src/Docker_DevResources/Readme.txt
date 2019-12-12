@@ -81,10 +81,27 @@ https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-contain
 
 docker run --storage-opt "size=100GB"
 
+---------------------------------------------------------------- Networking
+
+https://www.digitalocean.com/community/questions/how-to-ping-docker-container-from-another-container-by-name
+
+#Inspect network
+docker network inspect External-Primary-Virtual-Switch
+
+#Add container into the network
+docker network connect External-Primary-Virtual-Switch glutsvr
+
+
 ---------------------------------------------------------------- Create VM for windows
 https://docs.docker.com/machine/drivers/hyper-v/
 
 docker-machine create -d hyperv --hyperv-virtual-switch "External-Primary-Virtual-Switch" --hyperv-disk-size 200000 --hyperv-memory 4098 DockerWinVm
+
+#list
+docker-machine ls
+
+#remove
+docker-machine rm DockerWinVm -f
 
 ---------------------------------------------------------------- Docker Hyper-V
 
