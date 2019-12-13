@@ -1,0 +1,6 @@
+
+## Docker firewall port disabled TCP 445
+	ensure that network sharing is enabled
+	ensure that windows firewall TCP 445 port is enabled
+	ensure that eset antivirus firewall does not block TPC 445 port
+	see screen captures
