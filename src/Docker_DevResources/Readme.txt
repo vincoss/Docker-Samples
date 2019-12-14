@@ -49,9 +49,18 @@ docker exec -it containerName powershell
 docker attach containerName
 exit	#out fo the container
 
+---------------------------------------------------------------- Docker Image
+
 ## Display and remove dangling images
 docker images -f “dangling=true” -q
 docker rmi $(docker images -f "dangling=true" -q)
+
+## remove all images
+docker rmi -f $(docker images -a -q)
+
+## Remove all images (powershell)
+$images = docker images -a -q
+foreach ($image in $images) { docker image rm $image -f }
 
 ---------------------------------------------------------------- Switch containers Linux|Windows
 ##Swicht containers to linux
