@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  dockerhelper:
+    container_name: dockerhelper
+    ports:
+      - '8111:80'   #client:server
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+volumes:
+    type: bind
+    source: //bnesbs/GAD_Solutions/Builds
+    target: /app
+    read_only: false
+    external: false

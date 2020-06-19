@@ -3,6 +3,8 @@ https://hub.docker.com/_/microsoft-dotnet-framework
 https://hub.docker.com/_/microsoft-dotnet-core-sdk/
 https://github.com/microsoft/dotnet-framework-docker
 
+## Size limit might neeed increase container size limit
+https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/container-storage
 
 # Build docker image
 docker build --no-cache -t vincoss/dotnetdev:1.0.0 .

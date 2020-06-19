@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  service:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: dockerhelper.1.0.0-windows
+    container_name: dockerhelper
+    ports:
+      - '80:8123'   #client:server
+    restart: always
+    volumes:
+      - docker_tester_website:/appdata

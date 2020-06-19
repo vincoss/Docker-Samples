@@ -1,6 +1,8 @@
 # Resources
 https://github.com/portainer/portainer
 https://blog.container-solutions.com/
+https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md
+https://github.com/docker/labs/tree/master/beginner/
 
 ---------------------------------------------------------------- Basic
 
@@ -119,3 +121,9 @@ https://redmondmag.com/articles/2017/08/02/hyper-v-virtual-hard-disk-permission-
 
 ## Fix networking issues
 https://docs.docker.com/machine/drivers/hyper-v/
+
+
+## Plugins
+https://docs.docker.com/engine/extend/legacy_plugins/
+
+docker plugin install --grant-all-permissions vieux/sshfs
