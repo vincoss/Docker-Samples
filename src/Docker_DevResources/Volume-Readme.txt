@@ -1,5 +1,7 @@
 ## Resources
 https://docs.docker.com/storage/volumes/
+https://docs.docker.com/engine/reference/commandline/volume_create/
+https://github.com/vieux/docker-volume-sshfs
 
 ## Create volume
 docker volume create test
@@ -29,7 +31,17 @@ docker service ps devtest-service
 docker service rm devtest-service
 
 ## Use a volume driver
-docker volume create --driver vieux/sshfs -o sshcmd=ferdinand@10.0.129:c:/temp/docker -o password=pwdhere sshvolume
+docker volume create --driver vieux/sshfs -o sshcmd=ferdinand@10.0.0.129:c:/temp/docker -o password=pwdhere sshvolume
 
 # Run container with volume
 docker run -dt -it --rm -p 8123:80 --name dockerhelper -v sshvolume:/appdata:rw vincoss/dockerhelper.1.0.0-bionic
+
+## NFS Volume
+docker volume create --driver local --opt type=nfs --opt o=addr=10.0.0.129,rw --opt device=:g:/ nvol1
+
+# Run
+docker run -dt -it --rm -p 8123:80 --name dockerhelper -v nvol1:/appdata:rw vincoss/dockerhelper.1.0.0-bionic
+
+## Browse
+http://localhost/
+http://localhost:8123/api/diagnostics
