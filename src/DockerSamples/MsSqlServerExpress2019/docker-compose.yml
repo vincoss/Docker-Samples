@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+
+  mssqlserverexpress:
+    image: mcr.microsoft.com/mssql/server
+    container_name: mssqlserverexpress
+    hostname: mssqlserverexpress
+    volumes:
+      - mssqlserver:/data/teamcity_server/datadir
+      - mssqlserver:/opt/teamcity/logs
+    environment:
+      - SA_PASSWORD="Pass@word1"
+      - ACCEPT_EULA="Y"
+      - MSSQL_PID="Express"
+    expose:
+      - 1433
+    ports:
+      - '1433:1433'   #client:server
+    restart: always
+    networks:
+      - isolated_nw
+
+volumes:
+  mssqlserver:
+    external: true
+ 
+networks:
+  isolated_nw:
+    external: true
