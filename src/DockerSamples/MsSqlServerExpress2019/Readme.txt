@@ -1,5 +1,6 @@
 ﻿##Based on
 https://hub.docker.com/_/microsoft-mssql-server
+https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-docker?view=sql-server-ver15
 
 ## Get latest image
 docker pull mcr.microsoft.com/mssql/server
