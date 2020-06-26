@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
 
   teamcityserver:
@@ -6,10 +6,10 @@ services:
     container_name: teamcityserver
     hostname: teamcityserver
     volumes:
-      - teamcityserver_data:C:\ProgramData\JetBrains\TeamCity
-      - teamcityserver_logs:C:\TeamCity\logs
+      - teamcityserver:/data/teamcity_server/datadir
+      - teamcityserver:/opt/teamcity/logs
     environment:
-      - TEAMCITY_SERVER_MEM_OPTS="-Xmx750m"
+      - TEAMCITY_SERVER_MEM_OPTS="-Xms256m"
     expose:
       - 8111
     ports:
@@ -19,9 +19,7 @@ services:
       - isolated_nw
 
 volumes:
-  teamcityserver_data:
-    external: true
-  teamcityserver_logs:
+  teamcityserver:
     external: true
  
 networks:

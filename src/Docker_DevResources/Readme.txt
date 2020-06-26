@@ -11,6 +11,11 @@ https://github.com/docker/labs
 docker --version
 docker version
 docker info
+docker stats
+
+# Clean
+docker system prune -a
+docker volumes prune
 
 ##Test docker information
 docker run hello-world

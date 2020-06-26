@@ -1,21 +1,22 @@
 ﻿##Based on
 https://hub.docker.com/r/jetbrains/teamcity-server
 https://docs.docker.com/compose/compose-file/
-https://www.ntweekly.com/2018/04/02/copy-data-files-windows-container/
 
 ## Get latest image
-docker pull jetbrains/teamcity-server:latest-nanoserver
+docker pull jetbrains/teamcity-server
 
 ## Create volume
-docker volume create --name=teamcityserver_data
-docker volume create --name=teamcityserver_logs
+docker volume create --name=teamcityserver
 
 ## Create network
-docker network create --driver nat isolated_nw
+docker network create --driver bridge isolated_nw
 
 ## Build custom docker image
 docker-compose build
 docker-compose up --build
+
+## Run (Linux)
+docker run -it --name teamcity-server-instance -p 8111:8111 -v teamcityserver:/data/teamcity_server/datadir -v teamcityserver:/opt/teamcity/logs
 
 ## Compose & destroy
 docker-compose up -d
@@ -35,6 +36,7 @@ docker exec -it containerName powershell
 ## Browse
 http://localhost:8111/
 http://TeamCityServer:8111/
+http://192.168.227.198:8111/
 
 ## Get default password (for windows container need to stop it)
 docker cp TeamCityServer:C:\TeamCity\logs C:\Temp\TeamCityServer\logs
@@ -42,14 +44,8 @@ docker cp TeamCityServer:C:\TeamCity\logs C:\Temp\TeamCityServer\logs
 #Location on host machine (windows)
 C:\ProgramData\Docker\volumes
 
-------------------------------------------------- Create teamcity server
+------------------------------------------------- Linux
 
-1. create volume
-docker volume create --name=teamcityserver_data
-docker volume create --name=teamcityserver_logs
-
-2. create network (NOTE: Uses switch created from Hyper-v: b3f21147276e		External-Primary-Virtual-Switch		transparent		local)
-docker network create --driver transparent isolated_nw
-
-3. run container & destroy
-docker-compose up -d
+# Copy docker compose files into the server
+mkdir /home/ferdinand/docker-temp
+sudo scp ferdinand@10.0.0.129:C:/_Data/GitHub/Docker/docker-samples/src/DockerSamples/TeamCityServer /home/ferdinand/docker-temp/TeamCityServer

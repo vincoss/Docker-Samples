@@ -10,3 +10,6 @@ docker container rm webserver
 
 ## Container size
 docker ps -s
+
+## Run
+docker run --name nginx_container -v /var/log nginx

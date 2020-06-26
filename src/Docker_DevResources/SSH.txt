@@ -1,0 +1,7 @@
+## SSH
+https://www.ssh.com/ssh/copy-id
+https://www.pugetsystems.com/labs/hpc/How-To-Use-SSH-Client-and-Server-on-Windows-10-1470/
+https://boxofcables.dev/getting-started-on-ubuntu-core-with-hyper-v/
+
+# Copy the key into the remote machine
+ssh-copy-id -i id_rsa_ubuntu_core ferdinandgad@192.168.52.58
