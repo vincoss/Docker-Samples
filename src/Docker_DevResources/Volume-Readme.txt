@@ -2,6 +2,7 @@
 https://docs.docker.com/storage/volumes/
 https://docs.docker.com/engine/reference/commandline/volume_create/
 https://github.com/vieux/docker-volume-sshfs
+https://medium.com/@paonewbie/use-volume-driver-on-docker-4b6df3d78a80
 
 ## Create volume
 docker volume create test
@@ -31,7 +32,7 @@ docker service ps devtest-service
 docker service rm devtest-service
 
 ## Use a volume driver
-docker volume create --driver vieux/sshfs -o sshcmd=ferdinand@10.0.0.129:c:/temp/docker -o password=pwdhere sshvolume
+docker volume create --driver vieux/sshfs -o sshcmd=ferdinand@10.0.0.129:c:/temp/docker -o password=z48$KP3- sshvolume
 
 # Run container with volume
 docker run -dt -it --rm -p 8123:80 --name dockerhelper -v sshvolume:/appdata:rw vincoss/dockerhelper.1.0.0-bionic

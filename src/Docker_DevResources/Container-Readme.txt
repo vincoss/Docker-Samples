@@ -7,3 +7,6 @@ docker container stop webserver
 
 ## Remove container
 docker container rm webserver
+
+## Container size
+docker ps -s
