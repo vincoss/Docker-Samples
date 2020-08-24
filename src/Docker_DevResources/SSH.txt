@@ -2,6 +2,25 @@
 https://www.ssh.com/ssh/copy-id
 https://www.pugetsystems.com/labs/hpc/How-To-Use-SSH-Client-and-Server-on-Windows-10-1470/
 https://boxofcables.dev/getting-started-on-ubuntu-core-with-hyper-v/
+https://www.ssh.com/ssh/keygen/
+https://stackoverflow.com/questions/18683092/how-to-run-ssh-add-on-windows
+https://unix.stackexchange.com/questions/464574/ssh-add-returns-with-error-connecting-to-agent-no-such-file-or-directory
+https://unix.stackexchange.com/questions/131886/ssh-public-key-wont-send-to-server
 
 # Copy the key into the remote machine
-ssh-copy-id -i id_rsa_ubuntu_core ferdinandgad@192.168.52.58
+ssh-copy-id -i id_rsa_ubuntu_core yourname@192.168.52.58
+
+
+## Generate new SSH key
+
+1. Open Git Bash
+2. Enter	ssh-keygen -t rsa -b 16384 -C "yourmeail@example.com"
+2. Enter OR	ssh-keygen -t ecdsa -b 521 -C "Comment in here"
+3. Name pi_4_ubuntu_id_ecdsa
+
+## Add SSH Into 
+
+1. Open Git Bash	cd to ~/.ssh/
+2. Runn agent		ssh-agent -s	OR 	eval 'ssh-agent -s'
+3. Add SSH			ssh-add ~/.ssh/pi_4_ubuntu_id_ecdsa
+4. Enter the passphrase for ssh	

@@ -4,10 +4,15 @@ https://boxofcables.dev/getting-started-on-ubuntu-core-with-hyper-v/
 https://dylanmc.ca/-/blog/2018/05/05/my-tiny-file-server-with-ubuntu-core-nextcloud-and-syncthing/
 https://help.ubuntu.com/community/AutomaticallyMountPartitions
 
+https://linuxhint.com/list_disks_ubuntu/
+
 ## Ubuntu Core
 
 # Connect
 ssh -i id_rsa_ubuntu_core ferdinandgad@192.168.227.198
+
+# Reboot
+sudo reboot
 
 # Current path
 pwd
@@ -17,10 +22,16 @@ lscpu
 
 # List all partitions
 sudo lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL
+lsblk
+lsblk -e7		#hide loop devices
+lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL		# Show property of interest
+
+sudo fdisk -l		# list all attached disks, partitions, logical
 
 # Disk Size
 df -i
 df -k
+df -h
 
 # Check who can write into the directory
 ls -ld /writable
@@ -28,10 +39,10 @@ ls -rtl
 ls -la
 
 # Memory usage
-free -h
-top
-vmstat -s
-cat /proc/meminfo
+free -h				# Show in MBs
+top					# Print CPU and Memory usage
+vmstat -s			# Show details
+cat /proc/meminfo	# Print memory information
 
 # Host name
 hostname
@@ -39,9 +50,6 @@ hostname
 # User
 who
 whoami
-
-# Reboot
-sudo reboot
 
 # Snap
 snap list
