@@ -4,3 +4,8 @@
 	ensure that windows firewall TCP 445 port is enabled
 	ensure that eset antivirus firewall does not block TPC 445 port
 	see screen captures
+
+## COPY failed: CreateFile \\?\C:\ProgramData\Docker\tmp\docker-builder166786110\....
+If you have this issue, especialy when you used visual studio, I am 98% sure that it is caused by missing exception in .dockerignore file. 
+You need to add your file/directory to exceptions in .dockerignore
+Just make sure your copy from path is not part of the ignore file.
