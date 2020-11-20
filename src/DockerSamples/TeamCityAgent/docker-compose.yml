@@ -1,18 +1,16 @@
-version: '3.7'
+version: '3.8'
 services:
 
-  TeamCityAgent0001:
-    #image: jetbrains/teamcity-minimal-agent:latest-nanoserver
-    #image: jetbrains/teamcity-minimal-agent
-    #image: jetbrains/teamcity-agent:latest-windowsservercore
-    image: jetbrains/teamcity-agent
-    container_name: TeamCityAgent0001
-    hostname: TeamCityAgent0001
+  teamcityagent0001:
+    image: jetbrains/teamcity-agent:latest
+    container_name: teamcityagent0001
+    hostname: teamcityagent0001
     volumes:
-      - teamcityagent0001_data:C:/BuildAgent/conf
+      - teamcityagent0001_data:c:/var/teamcity/teamcityagent0001/conf
+      - teamcityagent0001_logs:c:/var/teamcity/teamcityagent0001/
     environment:
-      - AGENT_NAME=TeamCityAgent0001
-      - SERVER_URL=http://teamcityserver:8111
+      - AGENT_NAME=teamcityagent0001
+      - SERVER_URL=http://teamcity:8111/
       - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
     expose:
       - 8111
@@ -27,6 +25,8 @@ services:
 
 volumes:
   teamcityagent0001_data:
+    external: true
+  teamcityagent0001_logs:
     external: true
 
 networks:

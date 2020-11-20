@@ -37,10 +37,9 @@ RUN powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.Ser
 # Install NuGet CLI
 RUN powershell choco install nuget.commandline
 
-## Deve
-FROM mcr.microsoft.com/dotnet/sdk:3.1
-FROM mcr.microsoft.com/dotnet/sdk:5.0
-
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0
 
 ##
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]

@@ -2,6 +2,7 @@
 https://hub.docker.com/r/jetbrains/teamcity-agent
 https://hub.docker.com/_/microsoft-dotnet-framework
 https://hub.docker.com/_/microsoft-dotnet-core-sdk/
+https://hub.docker.com/_/microsoft-dotnet-sdk
 
 
 ## Get latest image
@@ -9,10 +10,20 @@ docker pull jetbrains/teamcity-agent
 
 ## Create volume
 docker volume create --name=teamcityagent0001_data
+docker volume create --name=teamcityagent0001_logs
+
+
+## Build & tag
+docker build -f Dockerfile --no-cache -t teamcityagentcore:1.0.0-windows .
+
+## Run
+docker run -it --rm teamcityagent:1.0.0-windows
 
 ## Build custom docker image
 docker-compose build
-docker-compose up --build -t jetbrains/teamcity-agent:sdk-1.0.0  
+docker-compose up --build -t jetbrains/teamcity-agent:sdk-1.0.0 .
+
+##docker build -f src/Gnu.Licensing.DevResources/Docker/Dockerfile.win-x64 --no-cache -t vincoss/gnulicensesvr:1.0.0-windows .
 
 ## Compose (scale agents)
 docker-compose up -d
@@ -26,6 +37,10 @@ docker-compose down
 
 ## Error logs
 docker logs --tail 50 --follow --timestamps TeamCityAgent0001
+
+## Show running container IP
+docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" TeamCityAgent0001
+docker exec -it gnulicensesvr bash
 
 ## Browse
 http://localhost:8111/
