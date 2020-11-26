@@ -6,8 +6,8 @@ services:
     container_name: teamcityserver
     hostname: teamcityserver
     volumes:
-      - teamcityserver:/data/teamcity_server/datadir
-      - teamcityserver:/opt/teamcity/logs
+      - teamcityserver:c:/var/teamcity/data/teamcity_server/datadir
+      - teamcityserver:c:/var/teamcity/opt/teamcity/logs
     environment:
       - TEAMCITY_SERVER_MEM_OPTS="-Xms256m"
     expose:
@@ -21,7 +21,7 @@ services:
 volumes:
   teamcityserver:
     external: true
- 
+
 networks:
   isolated_nw:
     external: true
