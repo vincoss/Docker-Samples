@@ -4,17 +4,18 @@
 #+	.net 4.8 sdk
 #+	7 zip
 #+  NuGet
+#+powershell
+#+	.net core sdk
+# node
 #	.asp.net mvc 5 skd
 #.sql cmd tools
-#	.net core sdk
 #	.VS build tools 2019
 # SSRS tools
-# python
+# pythond
 #add bin file environment paths
 #limit teamcity memory and cpu
 #limit agent memory and cpu
 #sql 
-#powershell
 
 ## paths C:\Program Files\7-Zip
 
@@ -22,24 +23,27 @@
 #FROM microsoft/dotnet-framework-build:4.7.1-windowsservercore-ltsc2016  
 #SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-
 FROM mcr.microsoft.com/dotnet/framework/sdk
 
-# Install 7z
-RUN [Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls' ; \
-    Invoke-WebRequest https://www.7-zip.org/a/7z1900-x64.msi -OutFile 7z.msi; \
-    Start-Process msiexec -Wait -ArgumentList /q, /i, 7z.msi ; \
-    Remove-Item -Force 7z.msi
+# ------------------------------------------------------------ Installs Core
 
-# Install Chocolatey
+# Chocolatey
 RUN powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# Install NuGet CLI
-RUN powershell choco install nuget.commandline
+## 7z
+RUN powershell choco install 7zip.install -y
 
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0
+# ------------------------------------------------------------ Installs Dev
+
+# NuGet CLI
+RUN powershell choco install nuget.commandline -y
+
+#  Git
+RUN powershell choco install git -y
+
+## dotnet
+RUN powershell choco install dotnetcore-sdk -y
+RUN powershell choco install dotnet-5.0-sdk -y
 
 ##
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -85,47 +89,3 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 # Path
 #RUN setx /M Path "C:\Program Files\7-Zip"
-
-
-# Install NuGet CLI
-#ENV NUGET_VERSION 5.8.0
-#RUN mkdir "%ProgramFiles%\NuGet"
-#RUN curl -O "%ProgramFiles%\NuGet\nuget.exe" https://dist.nuget.org/win-x86-commandline/v5.8.0/nuget.exe
-
-
-
-
-version: '3.8'
-services:
-
-  teamcityagent0001:
-    image: jetbrains/teamcity-agent
-    container_name: teamcityagent0001
-    hostname: teamcityagent0001
-    volumes:
-      - teamcityagent0001_data:c:/var/teamcity/teamcityagent0001/conf
-      - teamcityagent0001_logs:c:/var/teamcity/teamcityagent0001/
-    environment:
-      - AGENT_NAME=teamcityagent0001
-      - SERVER_URL=http://teamcity:8111/
-      - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
-    expose:
-      - 8111
-    ports:
-      - '9090:9090'   #client:server
-    restart: always
-    networks:
-      - isolated_nw
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-volumes:
-  teamcityagent0001_data:
-    external: true
-  teamcityagent0001_logs:
-    external: true
-
-networks:
-  isolated_nw:
-    external: true

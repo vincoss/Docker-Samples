@@ -9,3 +9,6 @@
 If you have this issue, especialy when you used visual studio, I am 98% sure that it is caused by missing exception in .dockerignore file. 
 You need to add your file/directory to exceptions in .dockerignore
 Just make sure your copy from path is not part of the ignore file.
+
+## Container has no IP Address
+Ensure that the network is uses has a right provider

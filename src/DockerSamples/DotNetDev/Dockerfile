@@ -1,17 +1,24 @@
-﻿# escape=`
+﻿FROM mcr.microsoft.com/dotnet/framework/sdk
 
-FROM vincoss/dotnetdev:baseinstallsVsToolsCopy AS Basefile
+# ------------------------------------------------------------ Installs Core
 
-# Copy build targets
-#COPY ["./vs_2019_buildtools", "C:/Temp/vs_2019_buildtools/"]
+# Chocolatey
+RUN powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-#RUN C:\TEMP\vs_2019_buildtools\vs_setup.exe --all --quiet --wait --norestart --nocache `
-    #--installPath C:\Vs2019BuildTools
+## 7z
+RUN powershell choco install 7zip.install -y
 
-# Restore the default Windows shell for correct batch processing.
-SHELL ["cmd", "/S", "/C"]
+# ------------------------------------------------------------ Installs Dev
 
-RUN C:\TEMP\vs_2019_buildtools\offline\vs_setup.exe --all --quiet --wait --norestart --nocache `
-    --installPath C:\Vs2019BuildTools
+# NuGet CLI
+RUN powershell choco install nuget.commandline -y
 
+#  Git
+RUN powershell choco install git -y
+
+## dotnet
+RUN powershell choco install dotnetcore-sdk -y
+RUN powershell choco install dotnet-5.0-sdk -y
+
+##
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]

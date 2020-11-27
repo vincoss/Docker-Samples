@@ -2,21 +2,20 @@ version: '3.8'
 services:
 
   teamcityagent0001:
-    image: jetbrains/teamcity-agent:latest
+    image: teamcityagent:1.0.0-windows #will tag it since it used dockerfile
     container_name: teamcityagent0001
     hostname: teamcityagent0001
     volumes:
-      - teamcityagent0001_data:c:/var/teamcity/teamcityagent0001/conf
-      - teamcityagent0001_logs:c:/var/teamcity/teamcityagent0001/
+      - teamcityagent:c:/buildagent/conf:/var/teamcity/teamcityagent0001/conf
+      - teamcityagent:c:/buildagent/logs:/var/teamcity/teamcityagent0001/logs
     environment:
-      - AGENT_NAME=teamcityagent0001
-      - SERVER_URL=http://teamcity:8111/
-      - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
+      - AGENT_NAME="teamcityagent0001"
+      - SERVER_URL="http://teamcity:8111"
+      - TEAMCITY_SERVER_MEM_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=350m"
     expose:
       - 8111
     ports:
       - '9090:9090'   #client:server
-    restart: always
     networks:
       - isolated_nw
     build:
@@ -24,9 +23,7 @@ services:
       dockerfile: Dockerfile
 
 volumes:
-  teamcityagent0001_data:
-    external: true
-  teamcityagent0001_logs:
+  teamcityagent:
     external: true
 
 networks:
