@@ -15,14 +15,16 @@ docker volume create --name=teamcityagent
 docker network create --driver nat isolated_nw
 
 ## Build & tag
-docker build -f Dockerfile --no-cache -t teamcityagentcore:1.0.0-windows .
+docker build -f Dockerfile --no-cache -t teamcityagentcoredev:1.0.0-windows .
+docker build -f Dockerfile --no-cache -t teamcityagentcoredevvstools:1.0.0-windows .
+docker build -f Dockerfile --no-cache -t teamcityagentwithdevtools:1.0.0-windows .
 
 ## Run
-docker run -it --rm teamcityagentcore:1.0.0-windows
-docker run -it --rm teamcityagent:1.0.0-windows
+docker run -it --rm teamcityagentcoredev:1.0.0-windows
+docker run -it --rm --name teamcityagent0001 teamcityagentwithdevtools:1.0.0-windows
 
 ## Build custom docker image
-docker-compose build -t teamcityagent:1.0.0-windows .
+docker-compose build
 docker-compose up -d
 docker-compose up --build -d
 docker-compose -f docker-compose.yml up -d
