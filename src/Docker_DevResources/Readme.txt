@@ -97,6 +97,7 @@ docker cp dummy:/root/ C:\Temp\TargetDir
 https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/container-storage
 
 docker run --storage-opt "size=100GB"
+"storage-opts": ["size=50GB"]
 
 ---------------------------------------------------------------- Networking
 

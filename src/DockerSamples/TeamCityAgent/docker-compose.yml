@@ -6,8 +6,8 @@ services:
     container_name: teamcityagent0001
     hostname: teamcityagent0001
     volumes:
-      - teamcityagent:c:/buildagent/conf:/var/teamcity/teamcityagent0001/conf
-      - teamcityagent:c:/buildagent/logs:/var/teamcity/teamcityagent0001/logs
+      - teamcityagent:c:/buildagent/conf
+      - teamcityagent:c:/buildagent/logs
     environment:
       - AGENT_NAME="teamcityagent0001"
       - SERVER_URL="http://teamcity:8111"

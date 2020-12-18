@@ -93,7 +93,36 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 #RUN curl -O "%ProgramFiles%\NuGet\nuget.exe" https://dist.nuget.org/win-x86-commandline/v5.8.0/nuget.exe
 
 
+docker run -it --name <your-new-tcAgent-CONTAINER-name>
+-e SERVER_URL="<your-local-tcServer-CONTAINER-name>:8111" 
+-e AGENT_NAME="<your-new-tcAgent-name-to-appear-in-tcserver>" 
+-v /var/run/docker.sock:/var/run/docker.sock 
+-v /opt/buildagent/work:/opt/buildagent/work 
+-v /opt/buildagent/temp:/opt/buildagent/temp 
+-v </where/you/wanna/store/local/configs>:/data/teamcity_agent/conf 
+--link <your-local-tcServer-container-name>
+<name-of-tcAgent-IMAGE-you-are-using> 
 
+## Disable and Remove Windows Defender Antimalware
+Set-MpPreference -DisableRealtimeMonitoring $true
+Get-WindowsFeature *defender* | Remove-WindowsFeature
+
+## Create local user
+FROM microsoft/windowsservercore
+RUN net user /add custom-admin
+RUN net localgroup Administrators custom-admin /add
+USER custom-admin
+RUN SilentInstall_Server.bat
+
+## User as
+# In order to set system PATH, ContainerAdministrator must be used
+USER ContainerAdministrator
+# return to low privilege user
+USER ContainerUser
+
+## Add domain user
+$de = [ADSI]"WinNT://$computer/$Group,group" 
+$de.psbase.Invoke("Add",([ADSI]"WinNT://$domain/$user").path)
 
 version: '3.8'
 services:
