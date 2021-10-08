@@ -1,0 +1,18 @@
+## Azure WebDeploy
+
+On the Azure VM,
+- I have ASP.NET 4.6 installed.
+- Install Web Platform Installer
+- Web Management Service is running.
+- The firewall has an inbound rule for port 80 and 8172.
+- Ran netstat -ano (TCP [::]:8172 [::]:0 LISTENING 4)
+- I have a DNS name configured for the VM.
+- WebDeploy 3.6 is installed. (last one)
+- On IIS select machine
+	a=> Management Service and enable remote connections
+	b=> Windows credentials or IIS Manager credentials
+
+## Errors
+
+1.The remote certificate is invalid according to the validation procedure
+# find this '-dest:auto,computerName='http://' and ensure that is https or http
