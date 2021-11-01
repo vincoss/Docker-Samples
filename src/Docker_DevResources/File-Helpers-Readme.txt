@@ -53,6 +53,8 @@ iisreset Server-Name /start
 sc Server-Name stop iisadmin
 
 ## SqlPackage.exe
+https://docs.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download?view=sql-server-ver15
+Install location: C:\Program Files\Microsoft SQL Server\150\DAC\bin
 SqlPackage.exe /Action:Publish /SourceFile:"ProjectName.dacpac" /Profile:"DB-Project-Name.deploy.xml"
 
 ## Hyper-V
