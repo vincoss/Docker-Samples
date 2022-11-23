@@ -1,0 +1,8 @@
+
+## Error
+
+Microsoft.ACE.OLEDB.16.0' provider is not registered on the local machine.
+
+Install both  32 and 64 bits with command line
+
+accessdatabaseengine_X64.exe /quiet
