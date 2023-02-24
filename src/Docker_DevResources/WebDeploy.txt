@@ -12,7 +12,23 @@ On the Azure VM,
 	a=> Management Service and enable remote connections
 	b=> Windows credentials or IIS Manager credentials
 
+## Example
+msdeploy.exe -source:package="%path%\WebSite.zip" 
+-dest:auto,computerName="https://%AppServerName%:8172/MsDeploy.axd?site=%WebSiteName%",username="%PublishUserName%",password="%PublishPassword%",authtype="Basic",includeAcls="False" 
+-verb:sync -enablerule:AppOffline -retryAttempts=5 -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -allowUntrusted 
+-setParam:name="IIS Web Application Name",value="%WebSiteName%"
+
 ## Errors
 
 1.The remote certificate is invalid according to the validation procedure
 # find this '-dest:auto,computerName='http://' and ensure that is https or http
+
+2. WebDeploy (401) Unauthorized error if authtype='NTLM' is used. then run command below
+	https://stackoverflow.com/questions/4807049/webdeploy-401-unauthorized-error
+	https://stackoverflow.com/questions/44609989/how-to-msdeploy-an-asp-net-core-app-from-command-line-csproj-not-project-json
+	reg add HKLM\Software\Microsoft\WebManagement\Server /v WindowsAuthenticationEnabled /t REG_DWORD /d 1
+
+
+## Resources
+https://learn.microsoft.com/en-us/aspnet/web-forms/overview/deployment/web-deployment-in-the-enterprise/deploying-web-packages
+https://learn.microsoft.com/en-us/iis/publish/troubleshooting-web-deploy/web-deploy-error-codes#ERROR_USER_UNAUTHORIZED
