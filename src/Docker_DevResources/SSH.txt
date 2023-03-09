@@ -24,3 +24,7 @@ ssh-copy-id -i id_rsa_ubuntu_core yourname@192.168.52.58
 2. Runn agent		ssh-agent -s	OR 	eval 'ssh-agent -s'
 3. Add SSH			ssh-add ~/.ssh/pi_4_ubuntu_id_ecdsa
 4. Enter the passphrase for ssh	
+
+## Generate SSH key for GitHub and TeamCity
+
+ssh-keygen -m PEM -t ecdsa -b 521 -C "your-key-name"
