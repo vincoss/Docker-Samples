@@ -1,80 +1,106 @@
-﻿#FROM mcr.microsoft.com/dotnet/framework/sdk
-#FROM devbase:1.0.0-windows
-#FROM devbasecore:1.0.0-windows
-FROM devbasecoresql:1.0.0-windows
-#FROM devbasecoresqlvs:1.0.0-windows
+﻿ARG DOTNET_SDK_VERSION31_TAG=3.1
+ARG DOTNET_SDK_VERSION5_TAG=5.0
+ARG DOTNET_SDK_VERSION6_TAG=6.0
+ARG DOTNET_SDK_VERSION7_TAG=7.0
+ARG DOTNET_SDK_VERSION8_TAG=8.0-preview
 
-# ------------------------------------------------------------ Base
+ARG DOCKER_CLI_IMAGE=docker:cli
+ARG TEAMCITYAGENT_IMAGE_REPOS=jetbrains/teamcity-agent
+ARG TEAMCITYAGENT_IMAGE_TAG=latest
 
-# Chocolatey
-RUN powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-RUN choco config set --name commandExecutionTimeoutSeconds --value 5400
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION8_TAG} AS dotnetsdk8
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION7_TAG} AS dotnetsdk7
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION6_TAG} AS dotnetsdk6
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION5_TAG} AS dotnetsdk5
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION31_TAG} AS dotnetsdk3
+FROM $DOCKER_CLI_IMAGE AS dockercli
 
-## 7z
-#RUN powershell choco install 7zip.install -y
+FROM scratch AS build
+# make sure folder exist
+WORKDIR /usr/local/bin
+WORKDIR /usr/share
+COPY --from=dotnetsdk3 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnetsdk5 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnetsdk6 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnetsdk7 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnetsdk8 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnetsdk8 /usr/share/powershell /usr/share/powershell
+COPY --from=dockercli /usr/local/libexec/docker/cli-plugins /usr/local/libexec/docker/cli-plugins
 
-# ------------------------------------------------------------ Core
+FROM ${TEAMCITYAGENT_IMAGE_REPOS}:${TEAMCITYAGENT_IMAGE_TAG} AS final
 
-# NuGet CLI
-#RUN powershell choco install nuget.commandline -y
+USER root
 
-#  Git
-#RUN powershell choco install git -y
+ARG DOTNET_SDK_VERSION31=3.1.0
+ARG ASPNET_VERSION31=3.1.0
+ARG DOTNET_VERSION31=3.1.0
 
-## dotnet-framework
-#RUN powershell choco install dotnetfx -y
+ARG DOTNET_SDK_VERSION5=5.0.0
+ARG ASPNET_VERSION5=5.0.0
+ARG DOTNET_VERSION5=5.0.0
 
-## dotnet
-#RUN powershell choco install dotnetcore-sdk -y
-#RUN powershell choco install dotnet-5.0-sdk -y
+ARG DOTNET_SDK_VERSION6=6.0.0
+ARG ASPNET_VERSION6=6.0.0
+ARG DOTNET_VERSION6=6.0.0
 
-# ------------------------------------------------------------ Sql
+ARG DOTNET_SDK_VERSION7=7.0.0
+ARG ASPNET_VERSION7=7.0.0
+ARG DOTNET_VERSION7=7.0.0
 
-#SQL Server Data Tools
-#RUN powershell choco install visualstudio2017sql -y
+ARG DOTNET_SDK_VERSION8=8.0.0
+ARG ASPNET_VERSION8=8.0.0
+ARG DOTNET_VERSION8=8.0.0
 
-#RUN rm -r "C:\ProgramData\chocolatey\logs"
+ARG POWERSHELL_VERSION=7.2.6
+ARG DOCKER_COMPOSE_VERSION=2.20.0
+# Install PowerShell global tool
+ENV DOTNET_SDK_VERSION31=${DOTNET_SDK_VERSION31} \
+  ASPNET_VERSION31=${ASPNET_VERSION31} \
+  DOTNET_VERSION31=${DOTNET_VERSION31} \
+  \
+  DOTNET_SDK_VERSION5=${DOTNET_SDK_VERSION5} \
+  ASPNET_VERSION5=${ASPNET_VERSION5} \
+  DOTNET_VERSION5=${DOTNET_VERSION5} \
+  \
+  DOTNET_SDK_VERSION6=${DOTNET_SDK_VERSION6} \
+  ASPNET_VERSION6=${ASPNET_VERSION6} \
+  DOTNET_VERSION6=${DOTNET_VERSION6} \
+  \
+  DOTNET_SDK_VERSION7=${DOTNET_SDK_VERSION7} \
+  ASPNET_VERSION7=${ASPNET_VERSION7} \
+  DOTNET_VERSION7=${DOTNET_VERSION7} \
+  \
+  DOTNET_SDK_VERSION8=${DOTNET_SDK_VERSION8} \
+  ASPNET_VERSION8=${ASPNET_VERSION8} \
+  DOTNET_VERSION8=${DOTNET_VERSION8} \
+  \
+  DOTNET_SDK_VERSION=${DOTNET_SDK_VERSION8} \
+  ASPNET_VERSION=${ASPNET_VERSION8} \
+  DOTNET_VERSION=${DOTNET_VERSION8} \
+  \
+  POWERSHELL_VERSION=${POWERSHELL_VERSION} \
+  POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Ubuntu-20.04 \
+  DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}
 
-# ------------------------------------------------------------ VS
+COPY --from=build /usr /usr
 
-## VS Build Tools
-#RUN powershell choco install visualstudio2017buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive" -y
-RUN powershell choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive" -y
-RUN powershell choco install sqlserver-cmdlineutils -y
+#RUN apt-get update \
+  ## && apt-get install docker-compose-plugin -y \ -> use docker:cli because package got delayed
+  #&& apt-get upgrade -y \
+  #&& ln -s /usr/share/powershell/pwsh /usr/bin/pwsh \
+  #&& chmod 755 /usr/share/powershell/pwsh \
+  #&& rm /usr/local/bin/docker-compose \
+  #&& ln -s /usr/local/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
+  #&& chmod +x /usr/libexec/docker/cli-plugins/docker-* \
+  ## Install module Pester - for root user
+  #&& pwsh -Command "Install-Module -Name Pester -Scope AllUsers -Force" \
+  #&& dotnet --help \
+  #&& dotnet --info \
+  #&& dotnet nuget locals all --clear \
+  #&& apt-get clean \
+  #&& rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
-# ------------------------------------------------------------ VS Build Targes
+USER buildagent
 
-#RUN mkdir 'C:\temp\Reporting Services'
-#RUN mkdir 'C:\temp\Xamarin'
-#COPY reporting-services "C:\temp\Reporting Services"
-#COPY xamarin "C:\temp\Xamarin"
-
-ARG src="reporting services"
-ARG target="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Reporting Services"
-ADD ${src} ${target}
-
-ARG src="xamarin"
-ARG target="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Xamarin"
-ADD ${src} ${target}
-
-# ------------------------------------------------------------ User
-
-# Copy files
-#COPY createUser.ps1 C:/temp/
-#COPY addAccountToLogonAsService.ps1 C:/temp/
-#COPY passwordEncrypted.txt C:/temp/
-
-# Create service agent user
-#RUN powershell -File .\temp\createUser.ps1
-
-# In order to set system PATH, ContainerAdministrator must be used
-#USER ContainerAdministrator
-#USER "NT Authority\System"
-
-# ------------------------------------------------------------ TA
-
-#TeamCity Agent
-#RUN choco install teamcityagent -y -v -force --allow-empty-checksums --package-parameters="'agentName=teamcityagent0001 serverUrl=http://teamcity:8111/ serviceAccount=.\\TeamCityAgentUser serviceAccountPassword=()_password12'"
-
-##
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+# ENV  PATH="$PATH:/home/buildagent/.dotnet/tools"
+# RUN dotnet tool install --global minver-cli --version $DOTNET_MINVER_VERSION
