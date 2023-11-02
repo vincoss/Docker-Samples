@@ -1,0 +1,7 @@
+New-SelfSignedCertificate -DnsName serverNameTodo -CertStoreLocation cert:\LocalMachine\My
+New-SelfSignedCertificate -DnsName serverNameTodo -CertStoreLocation cert:\LocalMachine\My
+
+New-SelfSignedCertificate -KeyAlgorithm RSA -KeyLength 2048 -DnsName serverNameTodo -CertStoreLocation cert:\LocalMachine\My
+-KeyAlgorithm RSA -KeyLength 2048 
+-Provider "Microsoft Enhanced Cryptographic Provider v1.0"
+ "Microsoft Platform Crypto Provider"

@@ -1,0 +1,88 @@
+## Get version
+$PSVersionTable.PSVersion
+get-host
+$PSVersionTable
+
+## List modulues
+import-module activedirectory
+
+##------------------------------------------------------------ Windows version
+
+[Environment]::OSVersion
+(Get-WmiObject -class Win32_OperatingSystem).Caption
+systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+
+
+##------------------------------------------------------------ Environment variables
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-6
+
+## Display PATH value
+Get-ChildItem Env:PATH
+
+## Append machine path variable
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Vs2019BuildTools\MSBuild\Current\Bin", "Machine")
+
+##------------------------------------------------------------ Event Log
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-eventlog?view=powershell-5.1
+
+Get-EventLog -List
+
+##------------------------------------------------------------ User and password
+
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.localaccounts/new-localuser?view=powershell-5.1
+
+## Create SecureString from string
+$SecurePassword=ConvertTo-SecureString 'MySuperSecretP@ssw0rd!' –asplaintext –force 
+
+## Create user and enter password
+$Password = Read-Host -AsSecureString
+New-LocalUser "TeamCityAgentUser" -Password $Password -FullName "TeamCityAgentUser" -Description "Account for TeamCity Agent."
+Add-LocalGroupMember -Group "Administrators" -Member "TeamCityAgentUser"
+
+## Create encrypted password string
+$Secure = Read-Host -AsSecureString
+$Encrypted = ConvertFrom-SecureString -SecureString $Secure -Key (1..16)
+$Encrypted | Set-Content passwordEncrypted.txt
+
+## Read encryted password from file to SecureString
+$Secure2 = Get-Content passwordEncrypted.txt | ConvertTo-SecureString -Key (1..16)
+
+## Set password never expire
+Set-LocalUser -Name "TeamCityAgentUser" -PasswordNeverExpires 1
+wmic useraccount where "Name='TeamCityAgentUser'" set PasswordExpires=false
+
+## List all users
+$env:UserName
+Get-LocalUser | Select *
+Get-WmiObject -ComputerName TeamCityAgent0001 -Class Win32_UserAccount -Filter "LocalAccount=True"
+
+## Get domain name
+Get-ADDomain
+Get-ADDomain -Current LoggedOnUser
+Get-ADDomain -Current LocalComputer
+
+##------------------------------------------------------------ Get process
+
+https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ee176855(v=technet.10)?redirectedfrom=MSDN
+
+Get-Process
+Get-Process explorer
+Get-Process w*
+Get-Process | Select-Object name,fileversion,productversion,company
+
+##------------------------------------------------------------ Windows service
+
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-service?view=powershell-6
+
+## Stop and delete service
+SC STOP TCBuildAgent
+SC DELETE TCBuildAgent
+
+## Diplay windows services
+Get-Service
+Get-Service "TCBuildAgent"
+Get-Service "TC*"
+Start-Service -DisplayName "TC*" -WhatIf
+
+## Start service
+Start-Service -Name "TCBuildAgent"
