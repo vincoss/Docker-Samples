@@ -1,0 +1,1 @@
+﻿Invoke-WebRequest 'https://todo.com' -MaximumRedirection 0 -ErrorAction SilentlyContinue | Select-Object StatusCode,StatusDescription
