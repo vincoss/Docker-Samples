@@ -26,7 +26,10 @@ msdeploy.exe -source:package="%path%\WebSite.zip"
 2. WebDeploy (401) Unauthorized error if authtype='NTLM' is used. then run command below
 	https://stackoverflow.com/questions/4807049/webdeploy-401-unauthorized-error
 	https://stackoverflow.com/questions/44609989/how-to-msdeploy-an-asp-net-core-app-from-command-line-csproj-not-project-json
+	Set/add the following reg value to WMSvc reg key:
 	reg add HKLM\Software\Microsoft\WebManagement\Server /v WindowsAuthenticationEnabled /t REG_DWORD /d 1
+	Recycle WMSvc:
+	net stop wmsvc & net start wmsvc
 
 
 ## Resources
