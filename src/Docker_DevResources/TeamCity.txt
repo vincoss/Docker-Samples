@@ -1,0 +1,46 @@
+
+## Proxy
+## The domain name or the IP address of the proxy host and the port
+teamcity.http.proxyHost=1.1.1.1
+teamcity.http.proxyPort=8080
+ 
+## If the proxy requires authentication, specify the login and password
+teamcity.http.proxyLogin=login
+teamcity.http.proxyPassword=password
+teamcity.http.proxyAuthenticationType=ntml
+
+## The hosts that should be accessed without going through the proxy, usually internal hosts. Provide a list of hosts, separated by the '|' character. The wildcard '*' can be used:
+ 
+teamcity.http.nonProxyHosts=localhost|*.mtnet
+
+## For an authenticated proxy add the following properties:
+ 
+### Authentication type
+teamcity.http.proxyAuthenticationType=proxyAuthenticationType=basic
+##teamcity.http.proxyAuthenticationType=proxyAuthenticationType=ntlm
+
+### Login and Password for the proxy:
+teamcity.http.proxyLogin=<redacted>
+teamcity.http.proxyPassword=<redacted>
+### Alternatively, instead of proxyLogin&proxyPassword use:
+### teamcity.http.proxyAuthentication=formatted authentication string: the "username:password' for basic authentication; Windows NT credentials for NTLM authentication
+
+# For HTTPS protocol
+ 
+## The URL or the IP address of the proxy host and the port:
+teamcity.https.proxyHost=<redacted>
+teamcity.https.proxyPort=8080
+ 
+## The hosts that should be accessed without going through the proxy, usually internal hosts. Provide a list of hosts, separated by the '|' character. The wildcard '*' can be used:
+teamcity.https.nonProxyHosts=localhost|*.mtnet
+ 
+## For an authenticated proxy add the following properties: ##
+ 
+### Authentication type
+teamcity.https.proxyAuthenticationType=basic
+##teamcity.http.proxyAuthenticationType=proxyAuthenticationType=ntlm
+
+## Resources
+https://teamcity-support.jetbrains.com/hc/en-us/community/posts/360000145070-Outbound-proxy-settings
+https://www.jetbrains.com/help/teamcity/how-to.html#Common+misconfigurations
+https://www.jetbrains.com/help/teamcity/build-agent-configuration.html#Set+up+Agent+behind+Proxy
