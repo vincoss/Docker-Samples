@@ -12,9 +12,18 @@ On the Azure VM,
 	a=> Management Service and enable remote connections
 	b=> Windows credentials or IIS Manager credentials
 
-## Example
+# Install location
+C:\Program Files (x86)\IIS\Microsoft Web Deploy\
+
+## Example Basic Authentication
 msdeploy.exe -source:package="%path%\WebSite.zip" 
 -dest:auto,computerName="https://%AppServerName%:8172/MsDeploy.axd?site=%WebSiteName%",username="%PublishUserName%",password="%PublishPassword%",authtype="Basic",includeAcls="False" 
+-verb:sync -enablerule:AppOffline -retryAttempts=5 -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -allowUntrusted 
+-setParam:name="IIS Web Application Name",value="%WebSiteName%"
+
+## Example NTLM Authentication
+msdeploy.exe -source:package="%path%\WebSite.zip" 
+-dest:auto,computerName="https://%AppServerName%:8172/MsDeploy.axd?site=%WebSiteName%",authtype="NTLM",includeAcls="False" 
 -verb:sync -enablerule:AppOffline -retryAttempts=5 -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -allowUntrusted 
 -setParam:name="IIS Web Application Name",value="%WebSiteName%"
 
@@ -33,5 +42,6 @@ msdeploy.exe -source:package="%path%\WebSite.zip"
 
 
 ## Resources
+https://www.iis.net/downloads/microsoft/web-deploy
 https://learn.microsoft.com/en-us/aspnet/web-forms/overview/deployment/web-deployment-in-the-enterprise/deploying-web-packages
 https://learn.microsoft.com/en-us/iis/publish/troubleshooting-web-deploy/web-deploy-error-codes#ERROR_USER_UNAUTHORIZED
