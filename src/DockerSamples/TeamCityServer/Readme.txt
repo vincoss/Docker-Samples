@@ -17,6 +17,8 @@ docker-compose up --build
 
 ## Run (Linux)
 docker run -it --name teamcity-server-instance -p 8111:8111 -v teamcityserver:/data/teamcity_server/datadir -v teamcityserver:/opt/teamcity/logs
+docker run --memory="6g" --cpus=4 -e TEAMCITY_SERVER_MEM_OPTS="-Xmx3g -XX:MaxPermSize=270m -XX:ReservedCodeCacheSize=640m" --name teamcity-server-instance -v C:/TeamCity/data:/data/teamcity_server/datadir -v C:/TeamCity/temp:/opt/teamcity/logs -v C:/TeamCity/temp:/opt/teamcity/temp -p 8111:8111 -e TEAMCITY_HTTPS_PROXY_ENABLED=true jetbrains/teamcity-server
+	
 
 ## Compose & destroy
 docker-compose up -d
@@ -49,3 +51,6 @@ C:\ProgramData\Docker\volumes
 # Copy docker compose files into the server
 mkdir /home/ferdinand/docker-temp
 sudo scp ferdinand@10.0.0.129:C:/_Data/GitHub/Docker/docker-samples/src/DockerSamples/TeamCityServer /home/ferdinand/docker-temp/TeamCityServer
+
+# Resources
+https://hub.docker.com/r/jetbrains/teamcity-server
