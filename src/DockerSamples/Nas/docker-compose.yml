@@ -12,7 +12,7 @@ services:
 
 volumes:
     type: bind
-    source: //bnesbs/GAD_Solutions/Builds
+    source: c:/temp
     target: /app
     read_only: false
     external: false

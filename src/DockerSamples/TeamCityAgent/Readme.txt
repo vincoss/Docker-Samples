@@ -26,11 +26,22 @@ docker build -f Dockerfile --no-cache -m 2GB -t devbasecore:1.0.0-windows .
 docker build -f Dockerfile --no-cache -m 2GB -t devbasecoresql:1.0.0-windows .
 docker build -f Dockerfile --no-cache -m 16GB -t devbasecoresqlvs:1.0.0-windows .
 docker build -f Dockerfile --no-cache -m 2GB -t devbasecoresqlvsta:1.0.0-windows .
+docker build -f Dockerfile --no-cache -m 2GB -t devtoolscore:1.0.0-windows .
 
 ## Run
 docker run -it --rm -h teamcityagent0001 --name teamcityagent0001 -v c:/buildagent/conf:c:/var/teamcity/teamcityagent0001/conf -v c:/buildagent/logs:c:/var/teamcity/teamcityagent0001/logs devbase:1.0.0-windows
 docker run -it --rm --name teamcityagent0001 devbasecoresqlvsta:1.0.0-windows
-docker run -it --rm -h teamcityagent0001 --name teamcityagent0001 devbasecoresqlvs:1.0.0-windows
+docker run -it --rm -h teamcityagent0001 --name teamcityagent0001  devtoolscore:1.0.0-windows
+docker run -it --rm -h teamcityagent0001 --name teamcityagent0001 -e SERVER_URL="http://teamcity:8111/" -e AGENT_NAME="teamcityagent0001" -v /opt/buildagent/work:/opt/buildagent/work -v /opt/buildagent/system:/opt/buildagent/system devtoolscore:1.0.0-windows
+
+https://hub.docker.com/r/jetbrains/teamcity-agent/#!
+
+SERVER_URL  http://teamcity:8111/
+AGENT_NAME  teamcityagent0001
+-v /opt/buildagent/work:/opt/buildagent/work
+-v /opt/buildagent/system:/opt/buildagent/system
+-v /node_modules:/usr/src/app/node_modules
+-v ./:/usr/src/app
 
 
 ## Build custom docker image
@@ -86,4 +97,5 @@ docker-compose up -d
     #  dockerfile: Dockerfile
 
 ## Resources
+https://hub.docker.com/r/jetbrains/teamcity-agent/#!
 https://github.com/actions/virtual-environments

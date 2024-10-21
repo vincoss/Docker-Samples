@@ -32,6 +32,6 @@ sudo scp -r /var/snap/docker/common/var-lib-docker/volumes/mssqlserver/ ferdinan
 ------------------------------------------------- Linux
 
 # Copy docker compose files into the server
-mkdir /home/ferdinandgad/mssql-temp
-sudo scp -r ferdinand@10.0.0.129:C:/_Data/GitHub/Docker/docker-samples/src/DockerSamples/MsSqlServerExpress2019 /home/ferdinandgad/mssql-temp/
-cd /home/ferdinandgad/mssql-temp/MsSqlServerExpress2019
+mkdir /home/ferdinand/mssql-temp
+sudo scp -r ferdinand@10.0.0.129:C:/_Data/GitHub/Docker/docker-samples/src/DockerSamples/MsSqlServerExpress2019 /home/ferdinand/mssql-temp/
+cd /home/ferdinand/mssql-temp/MsSqlServerExpress2019

@@ -9,7 +9,7 @@ https://linuxhint.com/list_disks_ubuntu/
 ## Ubuntu Core
 
 # Connect
-ssh -i id_rsa_ubuntu_core ferdinandgad@192.168.227.198
+ssh -i id_rsa_ubuntu_core ferdinand@192.168.227.198
 
 # Reboot
 sudo reboot
@@ -59,7 +59,7 @@ sudo snap refresh docker
 
 ## Create Directory
 
-mkdir /home/ferdinandgad/docker-temp
+mkdir /home/ferdinand/docker-temp
 
 # Exit
 exit
@@ -92,4 +92,4 @@ sudo scp -r /var/snap/docker/common/var-lib-docker/volumes/ ferdinand@10.0.129:c
 sudo scp ferdinand@10.0.0.129:c:/temp/ubuntu_core/one/a.txt /writable
 
 # Copy from from local machine to remote server (Not working since the folder need (sudo with security privileges which used does not have)
-scp -i id_rsa_ubuntu_core /c/temp/ubuntu_core/one/a.txt ferdinandgad@192.168.52.56:~/writable
+scp -i id_rsa_ubuntu_core /c/temp/ubuntu_core/one/a.txt ferdinand@192.168.52.56:~/writable
