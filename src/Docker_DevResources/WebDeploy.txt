@@ -3,6 +3,7 @@
 On the Azure VM,
 - I have ASP.NET 4.6 installed.
 - Install Web Platform Installer
+	select custom and install all modules manually
 - Web Management Service is running.
 - The firewall has an inbound rule for port 80 and 8172.
 - Ran netstat -ano (TCP [::]:8172 [::]:0 LISTENING 4)
