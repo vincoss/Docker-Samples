@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Default_AspNetCoreWebApi/Default_AspNetCoreWebApi.csproj" Id="8c11aea6-6994-4cd7-bb94-5ea7b7262faf" />
+  <Project Path="src/Default_AspNetCoreWebApiSdk/Default_AspNetCoreWebApiSdk.csproj" Id="10aa8dd6-84bb-451c-a001-1e210fdca3ed" />
+</Solution>

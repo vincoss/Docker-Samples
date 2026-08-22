@@ -3,11 +3,11 @@ services:
 
   teamcityserver:
     image: jetbrains/teamcity-server
-    container_name: teamcityserver
-    hostname: teamcityserver
+    container_name: teamcity-server-instance
+    hostname: teamcity-server-instance
     volumes:
-      - teamcityserver:c:/var/teamcity/data/teamcity_server/datadir
-      - teamcityserver:c:/var/teamcity/opt/teamcity/logs
+      - teamcity-server-instance:c:/var/teamcity/data/teamcity_server/datadir
+      - teamcity-server-instance:c:/var/teamcity/opt/teamcity/logs
     environment:
       - TEAMCITY_SERVER_MEM_OPTS="-Xms256m"
     expose:
@@ -19,7 +19,7 @@ services:
       - isolated_nw
 
 volumes:
-  teamcityserver:
+  teamcity-server-instance:
     external: true
 
 networks:

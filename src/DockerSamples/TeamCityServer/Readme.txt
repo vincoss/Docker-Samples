@@ -54,3 +54,15 @@ sudo scp ferdinand@10.0.0.129:C:/_Data/GitHub/Docker/docker-samples/src/DockerSa
 
 # Resources
 https://hub.docker.com/r/jetbrains/teamcity-server
+
+
+
+
+docker run --name teamcity-server-instance  \
+    -v <path-to-data-directory>:/data/teamcity_server/datadir \
+    -v <path-to-logs-directory>:/opt/teamcity/logs  \
+    -p <port-on-host>:8111 \
+    jetbrains/teamcity-server
+	
+ -p 443:8443
+docker run --name teamcity-server-instance -p 443:8443 -v C:/TeamCity/data:/data/teamcity_server/datadir -v C:/TeamCity/temp:/opt/teamcity/logs jetbrains/teamcity-server
