@@ -1,0 +1,6 @@
+@Default_WebApplication1_Linux_HostAddress = http://localhost:5202
+
+GET {{Default_WebApplication1_Linux_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
