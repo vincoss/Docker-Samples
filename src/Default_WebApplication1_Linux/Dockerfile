@@ -12,10 +12,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Default_WebApplication1_Linux/Default_WebApplication1_Linux.csproj", "src/Default_WebApplication1_Linux/"]
-RUN dotnet restore "./src/Default_WebApplication1_Linux/Default_WebApplication1_Linux.csproj"
+COPY ["/", "Default_WebApplication1_Linux/"]
+RUN dotnet restore "./Default_WebApplication1_Linux/Default_WebApplication1_Linux.csproj"
 COPY . .
-WORKDIR "/src/src/Default_WebApplication1_Linux"
+WORKDIR "/src/Default_WebApplication1_Linux"
 RUN dotnet build "./Default_WebApplication1_Linux.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

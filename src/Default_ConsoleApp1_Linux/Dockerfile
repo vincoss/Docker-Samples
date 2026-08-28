@@ -10,7 +10,8 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Default_ConsoleApp1_Linux/Default_ConsoleApp1_Linux.csproj", "Default_ConsoleApp1_Linux/"]
+## Copy all from current folder
+COPY ["/", "Default_ConsoleApp1_Linux/"]
 RUN dotnet restore "./Default_ConsoleApp1_Linux/Default_ConsoleApp1_Linux.csproj"
 COPY . .
 WORKDIR "/src/Default_ConsoleApp1_Linux"
