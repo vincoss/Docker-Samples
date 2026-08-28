@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Default_ConsoleApp1_FileWrite": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

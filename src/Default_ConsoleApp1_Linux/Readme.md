@@ -1,13 +1,21 @@
 
-### Build image
+### Docker build image
 ```
 podman build --force-rm -f Dockerfile -t defaultconsoleapp1linux:test .
+docker build --force-rm -f Dockerfile -t defaultconsoleapp1linux:test .
 ```
 
-### Run
+### Docker run
 ```
 podman run --rm -it defaultconsoleapp1linux:test
 podman run --rm -d defaultconsoleapp1linux:test
+```
+
+## Compose
+```
+docker compose create
+docker compose build
+docker compose up
 ```
 
 ### Description

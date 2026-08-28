@@ -1,0 +1,14 @@
+services:
+  # Service 1:
+  console1_windows:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: console1_windows_running
+
+  # Service 2:
+  console2_linux:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: console2_windows_running

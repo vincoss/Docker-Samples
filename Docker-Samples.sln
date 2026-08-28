@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Default_WebApplication1_Lin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Default_ConsoleApp1_Linux", "src\Default_ConsoleApp1_Linux\Default_ConsoleApp1_Linux.csproj", "{E97642DF-4AA9-93B8-F214-26B2D09DBE4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Default_ConsoleApp1_FileWrite", "src\Default_ConsoleApp1_FileWrite\Default_ConsoleApp1_FileWrite.csproj", "{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{E97642DF-4AA9-93B8-F214-26B2D09DBE4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E97642DF-4AA9-93B8-F214-26B2D09DBE4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E97642DF-4AA9-93B8-F214-26B2D09DBE4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +62,7 @@ Global
 		{D11B1ED9-3F92-4115-BAED-C526B6CE4F6A} = {950FF774-9118-4925-975C-0C14AE587618}
 		{C721F8E7-8635-480A-BAA4-04E515B57AEC} = {950FF774-9118-4925-975C-0C14AE587618}
 		{E97642DF-4AA9-93B8-F214-26B2D09DBE4E} = {950FF774-9118-4925-975C-0C14AE587618}
+		{CCD2B6BC-CEB4-4DB0-840B-79407F69F2F7} = {950FF774-9118-4925-975C-0C14AE587618}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF5E073-B111-48FE-A0F7-1ADA02AD8B64}
