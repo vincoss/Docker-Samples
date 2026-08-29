@@ -6,4 +6,6 @@ var filePath = Path.Combine(dataPath, "test.txt");
 
 Console.WriteLine(filePath);
 
+if (Directory.Exists(dataPath) == false) Directory.CreateDirectory(dataPath);
+
 File.WriteAllText(filePath, DateTime.UtcNow.ToString() + Environment.NewLine);

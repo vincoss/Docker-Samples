@@ -6,6 +6,8 @@ USER $APP_UID
 WORKDIR /app
 
 
+
+
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release

@@ -4,19 +4,18 @@
 # For more information, please see https://aka.ms/containercompat
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/runtime:10.0-nanoserver-ltsc2025 AS base
+FROM mcr.microsoft.com/dotnet/runtime:10.0-nanoserver-ltsc2022 AS base
 WORKDIR /app
 
 
 # This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:10.0-nanoserver-ltsc2025 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-nanoserver-ltsc2022 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-## Copy all from current folder
-COPY ["/", "Default_ConsoleApp1_FileWrite/"]
-RUN dotnet restore "./Default_ConsoleApp1_FileWrite/Default_ConsoleApp1_FileWrite.csproj"
+COPY ["Default_ConsoleApp1_FileWrite.csproj", "."]
+RUN dotnet restore "./Default_ConsoleApp1_FileWrite.csproj"
 COPY . .
-WORKDIR "/src/Default_ConsoleApp1_FileWrite"
+WORKDIR "/src/."
 RUN dotnet build "./Default_ConsoleApp1_FileWrite.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
