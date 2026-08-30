@@ -2,6 +2,11 @@
 ## Tasks
 Task.Delay(-1) Background Workers: Keeping a console host, service, or Discord bot alive so event handlers can run.
 
+## Powershell directory
+```
+${PWD}		Print Working Directory.
+```
+
 
 ## Resources
 

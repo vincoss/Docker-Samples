@@ -28,4 +28,6 @@ RUN dotnet publish "./Default_ConsoleApp1_FileWrite.csproj" -c %BUILD_CONFIGURAT
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+
 ENTRYPOINT ["dotnet", "Default_ConsoleApp1_FileWrite.dll"]

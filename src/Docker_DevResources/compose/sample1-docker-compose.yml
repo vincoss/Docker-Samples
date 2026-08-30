@@ -1,0 +1,24 @@
+
+name: my_custom_compose_stack_name
+
+services:
+  windows-app:
+    image: nginx
+    container_name: nginx_web_server
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: volume
+        source: windows_temp_vol
+        target: /var/log/nginx
+
+volumes:
+  windows_temp_vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # Must be the absolute Windows path using forward slashes
+      device: /c/temp

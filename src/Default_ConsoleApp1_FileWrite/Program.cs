@@ -1,7 +1,7 @@
 ﻿Console.WriteLine("Hello, World!");
 
 var basePath = AppContext.BaseDirectory;
-var dataPath = Path.Combine(basePath, "appData");
+var dataPath = Path.Combine(basePath, "appdata");
 var filePath = Path.Combine(dataPath, "test.txt");
 
 Console.WriteLine(filePath);

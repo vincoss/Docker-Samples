@@ -6,9 +6,17 @@ docker build --force-rm -f Dockerfile.windows -t default_consoleapp1_filewrite:t
 
 ### Docker run
 ```
-docker run --rm -it default_consoleapp1_filewrite:test
-docker run --rm -d default_consoleapp1_filewrite:test
+docker run --rm -it -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite:test
+docker run --rm -it --mount type=bind,source="c:/var/appdata",target=c:/app/appdata  default_consoleapp1_filewrite:test
+docker run --rm -d -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite:test
+docker run --rm -d --mount source=testvolume,target=c:/app/appdata default_consoleapp1_filewrite:test
 ```
+
+### Create a volume
+```
+docker volume create testvolume
+```
+
 
 ## Compose
 ```
