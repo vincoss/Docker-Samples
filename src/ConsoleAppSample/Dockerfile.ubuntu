@@ -1,0 +1,18 @@
+# https://hub.docker.com/_/microsoft-dotnet-core
+FROM mcr.microsoft.com/dotnet/runtime:9.0 AS runtime
+
+ARG APP_HOME=/var/app
+
+WORKDIR ${APP_HOME}
+COPY ["/bin/Release/net9.0/publish/.", "./"]
+
+ENV HOME ${APP_HOME}
+ENV NAME ConsoleAppSample
+
+VOLUME /var/appdata
+
+# Sets the fixed executable process
+ENTRYPOINT ["dotnet", "ConsoleAppSample.dll"]
+
+# Supplies default arguments that users can override at runtime
+CMD ["--environment", "Production"]

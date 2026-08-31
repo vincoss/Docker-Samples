@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  console1:
+    image: vincoss/consoleappsample:1.0.0-windows
+    container_name: consoleappsample-windows001
+    restart: "no"  # The container runs once, exits, and stays stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      Test_PASSWORD: "YourStrong(!)Password123"
+      APP_PID: "Developer"
+    volumes:
+      - app_data:c:/var/appdata
+   
+  console2:
+    image: vincoss/consoleappsample:1.0.0-windows
+    container_name: consoleappsample-windows002
+    restart: "no"  # The container runs once, exits, and stays stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      Test_PASSWORD: "YourStrong(!)Password123"
+      APP_PID: "Test"
+    volumes:
+      - app_data:c:/var/appdata
+
+volumes:
+    app_data: # C:\ProgramData\Docker\volumes
