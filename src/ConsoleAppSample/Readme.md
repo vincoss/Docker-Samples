@@ -1,7 +1,7 @@
 ﻿
 # Readme
 
-NOTE: The samples are written for cmd.exe.
+NOTE: The samples are written for cmd.exe. Publish the application first.
 
 ### Build & tag
 ```
@@ -14,12 +14,14 @@ docker build -f Dockerfile.ubuntu --no-cache -t vincoss/consoleappsample:1.0.0-b
 docker run -it --rm --name consoleappsample -v c:/var/appdata:c:/var/appdata vincoss/consoleappsample:1.0.0-windows
 docker run -it --rm --name consoleappsample -v c:/var/appdata:/var/appdata vincoss/consoleappsample:1.0.0-bionic
 ```
+
 ### Run wth arguments
 To pass command-line arguments to a container using docker run -it, append the arguments at the very end of the command, right after the image name.
 
 ```
 docker run -it <image_name> [arguments_here]
-docker run -it --rm --name consoleappsample -v c:/var/appdata:c:/var/appdata vincoss/consoleappsample:1.0.0-windows --environment Development 
+docker run -it --rm --name consoleappsample -v c:/var/appdata:c:/var/appdata vincoss/consoleappsample:1.0.0-windows --environment Development
+docker run -it --rm --name consoleappsample -v c:/var/appdata:/var/appdata vincoss/consoleappsample:1.0.0-bionic --environment Development
 ```
 
 ### Paths

@@ -7,6 +7,7 @@ using NReco.Logging.File;
 using System;
 using System.Text;
 
+
 Console.WriteLine($"Args: {string.Join(",", args)}");
 
 var baseDataDirectory = AppContext.BaseDirectory;
