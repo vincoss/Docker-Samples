@@ -1,19 +1,20 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
+# See https: //aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
-USER $APP_UID
 WORKDIR /app
+RUN chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Default_ConsoleApp1_FileWrite/Default_ConsoleApp1_FileWrite.csproj", "src/Default_ConsoleApp1_FileWrite/"]
-RUN dotnet restore "./src/Default_ConsoleApp1_FileWrite/Default_ConsoleApp1_FileWrite.csproj"
+## Copy all from current folder
+COPY ["/", "Default_ConsoleApp1_FileWrite/"]
+RUN dotnet restore "./Default_ConsoleApp1_FileWrite/Default_ConsoleApp1_FileWrite.csproj"
 COPY . .
-WORKDIR "/src/src/Default_ConsoleApp1_FileWrite"
+WORKDIR "/src/Default_ConsoleApp1_FileWrite"
 RUN dotnet build "./Default_ConsoleApp1_FileWrite.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

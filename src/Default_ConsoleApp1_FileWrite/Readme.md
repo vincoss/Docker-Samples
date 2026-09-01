@@ -1,15 +1,18 @@
 
 ### Docker build image
 ```
-docker build --force-rm -f Dockerfile.windows -t default_consoleapp1_filewrite:test .
+docker build --force-rm -f Dockerfile.windows -t default_consoleapp1_filewrite_windows:test .
+docker build --force-rm -f Dockerfile.linux -t default_consoleapp1_filewrite_linux:test .
 ```
 
 ### Docker run
 ```
-docker run --rm -it -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite:test
-docker run --rm -it --mount type=bind,source="c:/var/appdata",target=c:/app/appdata  default_consoleapp1_filewrite:test
-docker run --rm -d -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite:test
-docker run --rm -d --mount source=testvolume,target=c:/app/appdata default_consoleapp1_filewrite:test
+docker run --rm -it -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite_windows:test
+docker run --rm -it -v c:/var/appdata:/app/appdata default_consoleapp1_filewrite_linux:test
+
+docker run --rm -it --mount type=bind,source="c:/var/appdata",target=c:/app/appdata  default_consoleapp1_filewrite_windows:test
+docker run --rm -d -v c:/var/appdata:c:/app/appdata default_consoleapp1_filewrite_windows:test
+docker run --rm -d --mount source=testvolume,target=c:/app/appdata default_consoleapp1_filewrite_windowss:test
 ```
 
 ### Create a volume
