@@ -1,14 +1,18 @@
+
+name: default_fonsoleapp1_compose_stack_name
+
+# NOTE: this will not run!
+# On Windows (Docker Desktop): If your Docker Desktop is set to "Linux containers", 
+# console1_windows will fail to pull or start because its underlying OS layers are incompatible. 
+# If switched to "Windows containers", console2_linux will fail.
+
 services:
   # Service 1:
   console1_windows:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: console1_windows_running
+    image: defaultconsoleapp1:1.0.0-windows
+    container_name: defaultconsoleapp1-windows
 
   # Service 2:
   console2_linux:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: console2_windows_running
+    image: defaultconsoleapp1:1.0.0-linux
+    container_name: defaultconsoleapp1-linux
