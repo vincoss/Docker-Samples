@@ -24,6 +24,11 @@ docker run -it --rm --name consoleappsample -v c:/var/appdata:c:/var/appdata vin
 docker run -it --rm --name consoleappsample -v c:/var/appdata:/var/appdata vincoss/consoleappsample:1.0.0-bionic --environment Development
 ```
 
+### Compose
+```
+docker compose -f docker-compose-windows.yml up -d
+```
+
 ### Paths
 ```
 /opt: Used for standalone, self-contained, or proprietary software packages that keep their files in one place.
