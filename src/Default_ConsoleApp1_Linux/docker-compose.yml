@@ -1,3 +1,5 @@
+name: default_consoleapp1_linux_compose_stack_name
+
 services:
   # Service 1:
   console1_linux:

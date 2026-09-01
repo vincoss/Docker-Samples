@@ -16,6 +16,8 @@ podman run --rm -d defaultconsoleapp1linux:test
 docker compose create
 docker compose build
 docker compose up
+
+docker compose -f docker-compose.yml up -d
 ```
 
 ### Description
