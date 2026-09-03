@@ -13,8 +13,13 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["/", "Default_WebApplication1_Linux/"]
+
 RUN dotnet restore "./Default_WebApplication1_Linux/Default_WebApplication1_Linux.csproj"
 COPY . .
+
+# List files to debug the current working directory
+RUN ls -la
+
 WORKDIR "/src/Default_WebApplication1_Linux"
 RUN dotnet build "./Default_WebApplication1_Linux.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

@@ -2,6 +2,7 @@
 ### Build image
 ```
 podman build --force-rm -f Dockerfile -t defaultwebapplication1linux:test .
+docker build --force-rm -f Dockerfile -t defaultwebapplication1linux:test .
 ```
 
 ### Run
@@ -23,4 +24,9 @@ podman run --rm -d  -p 5202:8080 defaultwebapplication1linux:test
 ### Resources
 ```
 https://docs.podman.io/en/v5.5.2/markdown/podman-build.1.html
+```
+
+### Browse
+```
+http://localhost:5202/WeatherForecast
 ```
