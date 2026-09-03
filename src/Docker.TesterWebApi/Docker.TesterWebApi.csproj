@@ -1,19 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Data\X509Sample.pfx.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\Dockerfile.ubuntu-arm64" Link="Dev\Dockerfile.ubuntu-arm64" />
-    <None Include="..\..\Dockerfile.ubuntu-x64" Link="Dev\Dockerfile.ubuntu-x64" />
-    <None Include="..\..\Dockerfile.windows-x64" Link="Dev\Dockerfile.windows-x64" />
   </ItemGroup>
 
   <ItemGroup>

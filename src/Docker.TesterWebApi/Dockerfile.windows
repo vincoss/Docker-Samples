@@ -1,18 +1,16 @@
 # https://hub.docker.com/_/microsoft-dotnet-core
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2025 AS runtime
 
 ARG HTTP_PORT=8080
 ARG APP_HOME=/var/app
 
 WORKDIR ${APP_HOME}
-COPY ["/src/Docker.TesterWebApi/bin/Release/net9.0/publish/.", "./"]
+COPY ["bin/Release/net10.0/publish/.", "./"]
 
 ENV HOME ${APP_HOME}
-ENV NAME dockertesterapi
+ENV NAME dockertesterweb
 
 # Make ports available to the world outside this container for main web interface
 EXPOSE ${HTTP_PORT}
-
-VOLUME /var/appdata
 
 ENTRYPOINT ["dotnet", "Docker.TesterWebApi.dll"]
