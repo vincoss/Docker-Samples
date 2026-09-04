@@ -13,6 +13,4 @@ ENV NAME dockertesterapi
 # Make ports available to the world outside this container for main web interface
 EXPOSE ${HTTP_PORT}
 
-VOLUME /var/ appdata
-
 ENTRYPOINT ["dotnet", "Docker.TesterWebApi.dll"]
