@@ -11,7 +11,7 @@ podman run --rm -it defaultconsoleapp1linux:test
 podman run --rm -d defaultconsoleapp1linux:test
 ```
 
-## Compose
+### Compose
 ```
 docker compose create
 docker compose build
@@ -28,6 +28,18 @@ docker compose -f docker-compose.yml up -d
 --rm            Run and automatically remove the container when it exits.
 -it             Run interactively with a terminal (great for debugging or exploration).
 -d              Run in the background (detached)
+```
+
+### Docker Compose Key Flags
+```
+--build				Tells Docker Compose to build images before starting containers.
+--no-cache			Tells the builder to ignore all cached layers and rebuild from scratch.
+--force-recreate	Recreates the container even if the configuration and image haven't changed.
+
+**Example**
+docker compose up --build
+docker compose build --no-cache
+docker compose up --force-recreate
 ```
 
 ### Resources
