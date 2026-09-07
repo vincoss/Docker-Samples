@@ -1,0 +1,25 @@
+
+name: default_webapplication1_compose_stack_name
+
+services:
+  web-app:
+    image: default-web-application:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: Release
+    ports:
+      - "11234:8080"
+      - "11235:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Force Kestrel to bind to both HTTP and HTTPS globally inside the container
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      # Provide Kestrel with the internal certificate path and password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=C:\https\Default_WebApplication1.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Pass@word
+    volumes:
+      # Mount your host user profile's HTTPS folder to C:\https inside the Nanoserver container
+      - ${USERPROFILE}\AppData\Roaming\ASP.NET\https:C:\https:ro
+    restart: always

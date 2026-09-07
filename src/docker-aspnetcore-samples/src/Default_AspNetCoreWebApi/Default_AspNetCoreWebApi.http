@@ -1,6 +1,0 @@
-@Default_AspNetCoreWebApi_HostAddress = http://localhost:5042
-
-GET {{Default_AspNetCoreWebApi_HostAddress}}/products/
-Accept: application/json
-
-###

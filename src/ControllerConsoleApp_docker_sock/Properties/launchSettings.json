@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ControllerConsoleApp_docker_sock": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
