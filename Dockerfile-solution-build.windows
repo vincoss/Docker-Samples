@@ -27,10 +27,10 @@ RUN DIR
 # 6. Final Stage: Build runtime container using only the compiled assets
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /src/src/ConsoleApp1/bin/Release/publish/ ./ConsoleApp1/
+COPY --from=publish /src/src/ConsoleApp1/bin/release/publish/ ./ConsoleApp1/
 
 CMD ["cmd.exe"]
 #CMD ["ls", "-R"]
 
-### docker build -f Dockerfile --no-cache -t whole-solution-app .
+### docker build -f Dockerfile-solution-build.windows --no-cache -t whole-solution-app .
 ### docker run -it --name whole-solution-app whole-solution-app
