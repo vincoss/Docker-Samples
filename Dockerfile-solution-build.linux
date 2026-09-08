@@ -1,5 +1,6 @@
 # 1. Choose the base runtime image for the final lightweight container
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
+USER $APP_UID
 WORKDIR /app
 
 # 2. Use the full SDK image to compile and build the solution
