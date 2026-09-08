@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ConsoleAppProcessStartSample": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

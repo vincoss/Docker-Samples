@@ -1,1 +1,1 @@
-﻿Console.WriteLine("Hello, World!");
+﻿Console.WriteLine($"Default_ConsoleApp1: Hello, World! {DateTime.Now}");
