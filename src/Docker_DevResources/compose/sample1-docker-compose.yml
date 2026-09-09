@@ -1,4 +1,3 @@
-
 name: my_custom_compose_stack_name
 
 services:
