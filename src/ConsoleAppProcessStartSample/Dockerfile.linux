@@ -14,5 +14,5 @@ ENTRYPOINT ["dotnet", "ConsoleAppProcessStartSample/ConsoleAppProcessStartSample
 # Supplies default arguments that users can override at runtime
 CMD ["--environment", "Production"]
 
-### docker build -f Dockerfile --no-cache -t consoleappprocessstartsample .
-### docker run -it --name consoleappprocessstartsample consoleappprocessstartsample
+### docker build -f Dockerfile.linux --no-cache -t consoleappprocessstartsample .
+### docker run -it --rm --name consoleappprocessstartsample consoleappprocessstartsample

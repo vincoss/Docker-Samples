@@ -1,53 +1,66 @@
 ﻿using System.Diagnostics;
-using System.Text;
+
 
 Console.WriteLine("Hello, World!");
 
 var baseDirectory = AppContext.BaseDirectory;
 var parentDirectory = Directory.GetParent(baseDirectory.TrimEnd(new[] { '\\', '/' }));
-var completeAppPath = Path.Combine(parentDirectory.FullName, "Default_ConsoleApp1", "Default_ConsoleApp1.exe");
+var completeAppPath = Path.Combine(parentDirectory.FullName, "Default_ConsoleApp1", "Default_ConsoleApp1.dll");
 
 Console.WriteLine(baseDirectory);
 Console.WriteLine(parentDirectory);
 Console.WriteLine(completeAppPath);
 
-var startInfo = new ProcessStartInfo
+bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+
+var arguments = $"-c \"dotnet {completeAppPath} r=a\"";
+
+if(isWindows)
 {
-    FileName = completeAppPath,
-    Arguments = "/all",
-    RedirectStandardOutput = true,   // Allows C# to read the output stream
-    RedirectStandardError = true,    // Allows C# to read errors
+    arguments = $"/c \"dotnet {completeAppPath} r=a\"";
+}
+
+var startInfoWait = new ProcessStartInfo
+{
+    FileName = isWindows ? "cmd.exe" : "/bin/bash",
+    Arguments = arguments,
+    RedirectStandardOutput = true,   // Allows to read the output stream
+    RedirectStandardError = true,    // Allows to read errors
     UseShellExecute = false,         // Required to redirect streams
     CreateNoWindow = true            // Runs invisibly in the background
 };
 
-while(true)
+ void LaunchProcessFireAndForget()
 {
-    using (Process process = Process.Start(startInfo))
+    // DO NOT use a 'using' block here. The GC will not collect the process 
+    // while it is actively running and executing underlying native handles.
+    var process = new Process();
+
+    process.StartInfo = startInfoWait;
+
+    // Hook up the async pipe streams
+    process.OutputDataReceived += (s, e) => { if (e.Data != null) Console.WriteLine($"[Output]: {e.Data}"); };
+    process.ErrorDataReceived += (s, e) => { if (e.Data != null) Console.Error.WriteLine($"[Error]: {e.Data}"); };
+
+    // Clean up unmanaged OS handles immediately on exit to prevent leaks
+    process.EnableRaisingEvents = true;
+    process.Exited += (sender, e) =>
     {
-        var outputBuilder = new StringBuilder();
-        var errorBuilder = new StringBuilder();
+        Console.WriteLine($"Subprocess exited with code: {process.ExitCode}");
+        process.Dispose();
+    };
 
-        // Attach event handlers to read data dynamically
-        process.OutputDataReceived += (sender, e) => { if (e.Data != null) outputBuilder.AppendLine(e.Data); };
-        process.ErrorDataReceived += (sender, e) => { if (e.Data != null) errorBuilder.AppendLine(e.Data); };
+    process.Start();
+    process.BeginOutputReadLine();
+    process.BeginErrorReadLine();
+}
 
-        process.Start();
+while (true)
+{
+    Console.WriteLine("Working...");
 
-        // Start the asynchronous read
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
+    LaunchProcessFireAndForget();
 
-        // Wait for the process to exit safely
-        process.WaitForExit();
-
-        string output = outputBuilder.ToString();
-        string error = errorBuilder.ToString();
-
-        Console.WriteLine("Output:");
-        Console.WriteLine(output);
-        Console.WriteLine(error);
-    }
-
-    await Task.Delay(5000);
+    Console.WriteLine("Waiting...");
+    await Task.Delay(100);
 }
