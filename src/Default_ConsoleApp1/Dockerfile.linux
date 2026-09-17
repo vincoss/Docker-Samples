@@ -27,3 +27,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Default_ConsoleApp1.dll"]
+
+#docker build -f Dockerfile.linux --no-cache -t vincoss/defaultconsoleapp1:1.0.0-linux .
+#docker run -it --rm --name defaultconsoleapp1-linux vincoss/defaultconsoleapp1:1.0.0-linux

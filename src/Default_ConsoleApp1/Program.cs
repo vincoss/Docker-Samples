@@ -1,7 +1,7 @@
 ﻿
 using System.Diagnostics;
 
-Console.WriteLine(string.Join(",", args));
+Console.WriteLine($"args: {string.Join(",", args)}");
 
 var random = new Random();
 var delay = random.Next(1000, 10000);
@@ -21,8 +21,7 @@ var r = random.Next(0, 2);
 
 if(r==1)
 {
-    throw new Exception("Bad error");
+  throw new Exception("Bad error");
 }
 
 Console.WriteLine("Exit");
-
