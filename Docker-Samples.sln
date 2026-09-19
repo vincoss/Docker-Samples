@@ -36,6 +36,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppProcessStartSample", "src\ConsoleAppProcessStartSample\ConsoleAppProcessStartSample.csproj", "{729C3D8C-EDC8-4957-9FFC-B15433E17EB0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webhook", "Webhook", "{03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}"
+	ProjectSection(SolutionItems) = preProject
+		hook-docker-compose-linux.yml = hook-docker-compose-linux.yml
+		hook-docker-compose.yml = hook-docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiverConsole1", "src\ReceiverConsole1\ReceiverConsole1.csproj", "{EEB7A034-2707-4CF4-830E-155067272D4F}"
 EndProject
