@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Text;
 
 Console.WriteLine("ReceiverConsole1 - Hello, World!");
 Console.WriteLine($"args: {string.Join(",", args)}");
@@ -10,6 +11,9 @@ var config = new ConfigurationBuilder()
 
 // Fetch the dynamic connection string injected by the publisher
 var someArg = config["SOME_ARG"];
+var con = config["SQL_CONNECTION_STRING"];
+
+Console.WriteLine($"SQL_CONNECTION_STRING: {con}");
 
 if (string.IsNullOrWhiteSpace(someArg))
 {

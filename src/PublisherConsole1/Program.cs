@@ -2,6 +2,9 @@
 using System.Text.Json;
 
 
+// run with cmd
+// curl -X POST http://localhost:5000/webhook -H "Content-Type: application/json" -d "{\"TenantId\":\"client-alpha\", \"EventType\":\"push\"}"
+
 Console.WriteLine("PublisherConsole1 - Hello, World!");
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +14,7 @@ var app = builder.Build();
 app.MapPost("/webhook", async (HttpContext context) =>
 {
     using var reader = new StreamReader(context.Request.Body);
-    //var body = await reader.ReadToEndAsync();
-
-    var body = @"{""TenantId"": ""client-alpha"", ""EventType"": ""push""}";
+    var body = await reader.ReadToEndAsync();
 
     // Parse the payload to determine the target tenant or database
     var payload = JsonSerializer.Deserialize<WebhookPayload>(body);
@@ -35,7 +36,6 @@ app.MapPost("/webhook", async (HttpContext context) =>
 
 string ResolveSqlStringForTenant(string tenantId)
 {
-    // In production, fetch this securely from a database or a mapping table
     return $"Server=tcp:{tenantId}.database.windows.net;Database=ProductionDB;User Id=AppUser;";
 }
 
