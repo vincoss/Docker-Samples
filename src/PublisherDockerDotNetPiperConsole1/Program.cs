@@ -1,5 +1,6 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
+using System.Runtime.InteropServices;
 using System.Text;
 
 Console.WriteLine("PublisherDockerDotNetPiperConsole1 - starting...");
@@ -29,8 +30,33 @@ app.MapPost("/webhook", async (HttpContext context) =>
 
 async Task LaunchReceiverContainerWithSdkAsync(string payload)
 {
-     var clientConfig = new DockerClientBuilder();
-     var client = clientConfig.Build();
+    Uri dockerUri;
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        // Windows local pipe
+        dockerUri = new Uri("npipe://./pipe/docker_engine");
+    }
+    else
+    {
+        // Linux/macOS Unix Socket file
+        dockerUri = new Uri("unix:///var/run/docker.sock");
+    }
+
+    var clientConfig = new DockerClientBuilder();
+     var client = clientConfig
+                     .WithEndpoint(dockerUri)
+                     .Build();
+
+    try
+    {
+        var version = await client.System.GetVersionAsync();
+        Console.WriteLine($"Connected to Docker! Version: {version.Version}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Connection failed: {ex.Message}");
+    }
 
     const string imageName = "dynamic-receiver-piper";
 
@@ -70,13 +96,19 @@ async Task LaunchReceiverContainerWithSdkAsync(string payload)
 
         Console.WriteLine("Writing data to container STDIN...");
         await stream.WriteAsync(buffer, 0, buffer.Length, default).ConfigureAwait(false);
-        stream.CloseWrite();
+
+        /*
+            This is required signal to receiver that the data write is complete. 
+            Prevents receiver reads forever. Console.OpenStandardInput() reads forever.
+         */
+
+        stream.Dispose(); 
 
         Console.WriteLine($"[Publisher] Injected secret and launched container {containerId[..12]}.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[Publisher] Docker SDK Error: {ex.Message}");
+        Console.WriteLine($"[Publisher] Docker SDK Error: {ex}");
     }
 }
 
