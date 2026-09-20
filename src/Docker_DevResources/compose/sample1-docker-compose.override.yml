@@ -1,0 +1,5 @@
+
+  services:
+    windows-app:
+      environment:
+      DEBUG: "true"

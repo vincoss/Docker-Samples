@@ -1,0 +1,6 @@
+@PublisherDockerAzureSdkPiperConsole1_HostAddress = http://localhost:5014
+
+GET {{PublisherDockerAzureSdkPiperConsole1_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,22 @@
+
+services:
+
+  # 1. Publisher hook
+  web:
+    build:
+      context: ./src/PublisherDockerDotNetPiperConsole1
+      dockerfile: Dockerfile.linux
+    ports:
+      - "5000:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  
+  # 2. receiver container
+  receiver:
+    build:
+      context: ./src/ReceiverStdinConsole2
+      dockerfile: Dockerfile.linux
+ 
+
+# docker compose -f hook-docker-compose-linux.yml build
+# docker compose -f hook-docker-compose-linux.yml up

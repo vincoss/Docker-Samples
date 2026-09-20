@@ -31,7 +31,7 @@ docker compose up
 ### Description
 ```
 --force-rm      Remove Intermediate Containers During Build
--t              Specifies the name which is assigned to the resulting image if the build process completes successfully. 
+-t              Stands for tag. Specifies the name which is assigned to the resulting image if the build process completes successfully. 
 -f              Specifies a Containerfile which contains instructions for building the image.
 --rm            Run and automatically remove the container when it exits.
 -it             Run interactively with a terminal (great for debugging or exploration).

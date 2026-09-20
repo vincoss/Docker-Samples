@@ -109,6 +109,9 @@ docker network inspect External-Primary-Virtual-Switch
 #Add container into the network
 docker network connect External-Primary-Virtual-Switch glutsvr
 
+# Docker run
+docker run -it mcr.microsoft.com/windows/nanoserver:ltsc2025 cmd.exe
+
 
 ---------------------------------------------------------------- Create VM for windows
 https://docs.docker.com/machine/drivers/hyper-v/
