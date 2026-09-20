@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublisherDockerDotNetPiperC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiverStdinConsole2", "src\ReceiverStdinConsole2\ReceiverStdinConsole2.csproj", "{61B9992C-079E-4D58-A0BB-1C930E3E4CA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublisherDockerAzureSdkPiperConsole1", "src\PublisherDockerAzureSdkPiperConsole1\PublisherDockerAzureSdkPiperConsole1.csproj", "{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,10 @@ Global
 		{61B9992C-079E-4D58-A0BB-1C930E3E4CA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61B9992C-079E-4D58-A0BB-1C930E3E4CA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61B9992C-079E-4D58-A0BB-1C930E3E4CA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,6 +159,7 @@ Global
 		{5B166F01-E7C4-4330-9E47-7048DA1EA985} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
 		{75F11158-79DC-4B81-A3C1-3596EC2B3C54} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
 		{61B9992C-079E-4D58-A0BB-1C930E3E4CA0} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
+		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF5E073-B111-48FE-A0F7-1ADA02AD8B64}
