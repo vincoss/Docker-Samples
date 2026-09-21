@@ -71,7 +71,7 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
         // 2. Define target Azure resource coordinates
         string subscriptionId = "";
         string resourceGroupName = "Development";
-        string containerGroupName = "WebApi-env-20260903153212";
+        string containerGroupName = "asd111"; // this group is short instances
 
         ResourceIdentifier resourceIdentifier = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
         ResourceGroupResource resourceGroup = armClient.GetResourceGroupResource(resourceIdentifier);

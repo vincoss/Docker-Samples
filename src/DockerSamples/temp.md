@@ -1,4 +1,6 @@
-﻿
+﻿https://learn.microsoft.com/en-us/azure/container-instances/container-instances-overview
+
+
 console app .NET Core
 pass argument SQL connection string
 serverless
