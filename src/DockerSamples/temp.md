@@ -79,10 +79,14 @@ https://developers.redhat.com/articles/2022/03/21/hello-podman-using-net#using_p
 curl -X POST https://publisherdockerdotnetpiperconsol.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"TenantId\":\"client-alpha\", \"EventType\":\"push\"}"
 curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"development120260908161132/receiverstdinconsole2\"}"
 
-curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"development120260908161132.azurecr.io/receiverstdinconsole2\"}"
+curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"development120260908161132.azurecr.io/receiverstdinconsole2:latest\"}"
+curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"webapi20260903153932.azurecr.io/webfrontend:20260903063529\"}"
 
 
 does not have authorization to perform action 'Microsoft.ContainerInstance/containerGroups/write' over scope '/subscriptions/xxx/resourceGroups/Development/providers/Microsoft.ContainerInstance/containerGroups/WebApi-env-20260903153212' or the scope 
+
+	use, JSON ARM templates
+	https://learn.microsoft.com/en-us/training/paths/deploy-manage-resource-manager-templates/
 
 
 ar credential = new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned); 

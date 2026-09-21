@@ -35,11 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "src\WebA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppProcessStartSample", "src\ConsoleAppProcessStartSample\ConsoleAppProcessStartSample.csproj", "{729C3D8C-EDC8-4957-9FFC-B15433E17EB0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Webhook", "Webhook", "{03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}"
-	ProjectSection(SolutionItems) = preProject
-		hook-docker-compose-linux.yml = hook-docker-compose-linux.yml
-		hook-docker-compose.yml = hook-docker-compose.yml
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "", "", "{03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiverConsole1", "src\ReceiverConsole1\ReceiverConsole1.csproj", "{EEB7A034-2707-4CF4-830E-155067272D4F}"
 EndProject
@@ -52,6 +48,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiverStdinConsole2", "src\ReceiverStdinConsole2\ReceiverStdinConsole2.csproj", "{61B9992C-079E-4D58-A0BB-1C930E3E4CA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublisherDockerAzureSdkPiperConsole1", "src\PublisherDockerAzureSdkPiperConsole1\PublisherDockerAzureSdkPiperConsole1.csproj", "{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{9A8D196A-7D5D-4D2A-96AC-F4F8F8B29D5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureManagedIdentityTesterConsole", "src\AzureManagedIdentityTesterConsole\AzureManagedIdentityTesterConsole.csproj", "{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +139,10 @@ Global
 		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -160,6 +164,7 @@ Global
 		{75F11158-79DC-4B81-A3C1-3596EC2B3C54} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
 		{61B9992C-079E-4D58-A0BB-1C930E3E4CA0} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
 		{30AC440E-9D70-45BC-891C-4EC1F39D9FEB} = {03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}
+		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2} = {9A8D196A-7D5D-4D2A-96AC-F4F8F8B29D5A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF5E073-B111-48FE-A0F7-1ADA02AD8B64}

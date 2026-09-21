@@ -4,6 +4,7 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.ContainerInstance;
 using Azure.ResourceManager.ContainerInstance.Models;
+using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Resources;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.IdentityModel.Tokens.Jwt;
@@ -54,14 +55,13 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
     //var managedIdentityId = ManagedIdentityId.FromUserAssignedObjectId("bc9df52a-c2b4-41f8-96a2-69054af16a6d");
     //var credentialOptions = new ManagedIdentityCredentialOptions(managedIdentityId)
     //{
-        
+
     //};
     //var credential = new ManagedIdentityCredential(credentialOptions);
+    //new DefaultAzureCredential(); // Only to run code locally.
 
-    var credential = new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned);  //new DefaultAzureCredential(); // Only to run code locally.
+    var credential = new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned);  
     var armClient = new ArmClient(credential);
-
-    await PrintUserIndentityInfo(credential);
 
     try 
     {
@@ -73,8 +73,8 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
         string resourceGroupName = "Development";
         string containerGroupName = "WebApi-env-20260903153212";
 
-        ResourceIdentifier rgIdentifier = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
-        ResourceGroupResource resourceGroup = armClient.GetResourceGroupResource(rgIdentifier);
+        ResourceIdentifier resourceIdentifier = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
+        ResourceGroupResource resourceGroup = armClient.GetResourceGroupResource(resourceIdentifier);
         ContainerGroupCollection containerGroupCollection = resourceGroup.GetContainerGroups();
 
         // 1. Set resource requirements using the correct types for 1.4.0
@@ -82,10 +82,20 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
         var resourceRequirements = new ContainerResourceRequirements(resourceRequests);
 
         // 2. Initialize the container with the correct ContainerPort class
-        string containerName = "my-app-container";
 
-        var container = new ContainerInstanceContainer(containerName, dto.imageName, resourceRequirements)
+        string containerBaseName = $"test-container";
+        string containerUniqueId = $"{DateTime.UtcNow:yyyyMMddHHmmssfffffff}";
+        string containerName = $"{containerUniqueId}-{containerBaseName}";
+
+        //"mcr.microsoft.com/azuredocs/aci-helloworld";
+        string containerImage = dto.imageName;
+
+        Console.WriteLine($"{nameof(containerName)}: {containerName}");
+        Console.WriteLine($"{nameof(dto.imageName)}: {dto.imageName}");
+
+        var container = new ContainerInstanceContainer(containerName, containerImage, resourceRequirements)
         {
+            // TODO: no port
             // Fix: This must be 'ContainerPort' instead of 'ContainerGroupPort'
             Ports = { new ContainerPort(80) }
         };
@@ -96,13 +106,14 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
             new List<ContainerInstanceContainer> { container },
             ContainerInstanceOperatingSystemType.Linux) // Explicit enum string wrapper used in 1.4.x
         {
+            // TODO: private and no port
             IPAddress = new ContainerGroupIPAddress(
                 new List<ContainerGroupPort> { new ContainerGroupPort(80) },
                 ContainerGroupIPAddressType.Public)
             {
-                DnsNameLabel = "unique-dns-label-for-your-app"
+                DnsNameLabel = $"{containerBaseName}-{Guid.NewGuid().ToString().Substring(0, 8)}"
             },
-            RestartPolicy = ContainerGroupRestartPolicy.OnFailure
+            RestartPolicy = ContainerGroupRestartPolicy.Never, // NOTE: we don't want restart.
         };
 
         Console.WriteLine($"Deploying Container Group '{containerGroupName}' to Azure...");
@@ -130,35 +141,6 @@ async Task LaunchReceiverContainerWithSdkAsync(WebhookPayload dto)
     catch (Exception ex)
     {
         Console.WriteLine($"[Publisher] Docker SDK Error: {ex}");
-    }
-}
-
-async Task PrintUserIndentityInfo(TokenCredential credential)
-{
-    try
-    {
-        // 1. Request a token for Azure Management API
-        var tokenRequestContext = new TokenRequestContext(new[] { "https://azure.com" });
-        var tokenResult = await credential.GetTokenAsync(tokenRequestContext, default);
-
-        // 2. Parse the JWT token
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(tokenResult.Token);
-
-        // 3. Extract identity claims
-        // "appid" or "azp" (authorized party) contains the Application/Client ID
-        string clientId = jwtToken.Payload.TryGetValue("appid", out var appid) ? appid.ToString() : null
-                          ?? (jwtToken.Payload.TryGetValue("azp", out var azp) ? azp.ToString() : "Unknown");
-
-        string tenantId = jwtToken.Payload.TryGetValue("tid", out var tid) ? tid.ToString() : "Unknown";
-
-        Console.WriteLine($"[Success] ArmClient is running as identity:");
-        Console.WriteLine($"Tenant ID: {tenantId}");
-        Console.WriteLine($"Client ID / App ID: {clientId}");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Error] Could not retrieve identity token: {ex.Message}");
     }
 }
 
