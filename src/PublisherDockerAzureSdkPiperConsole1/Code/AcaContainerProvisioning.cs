@@ -11,6 +11,11 @@ using System.ClientModel.Primitives;
 
 namespace PublisherDockerAzureSdkPiperConsole1
 {
+    /*
+        Resouces:
+        https://learn.microsoft.com/en-us/azure/container-apps/jobs?tabs=azure-cli
+     */
+
     public class ContainerStart
     {
         public required string ResourceGroupName { get; set; } = "development";
@@ -32,7 +37,20 @@ namespace PublisherDockerAzureSdkPiperConsole1
         Container Apps Jobs Contributor
         Container Apps Jobs Operator
 
+     # Example
+     --name "my-job"
+     --resource-group "my-resource-group"
+     --environment "my-environment"
+     --replica-timeout 1800
+     --replica-retry-limit 3
+     --replica-completion-count 5
+     --parallelism 5
+     --image "myregistry.azurecr.io/quickstart-jobs:latest"
+     --cpu "0.25"
+     --memory "0.5Gi"
+     --env-vars "MY_ENV_VAR=my-value"
     */
+
 
     public class AcaContainerProvisioning
     {
@@ -54,7 +72,8 @@ namespace PublisherDockerAzureSdkPiperConsole1
 
             string resourceGroupName = "development";
             string environmentName = "WebApi-env-20260903153212"; // Must already exist
-            string jobName = "test1";
+
+            string jobContainerBaseName = "org-test-container";
 
             // 2. Fetch the Resource Group reference
             var resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
@@ -66,7 +85,7 @@ namespace PublisherDockerAzureSdkPiperConsole1
             // 4. Construct the baseline configuration for the Job
             // Gather the Resource ID of your Container Apps Environment
             string environmentId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}";
-            .
+            
             // Pass BOTH the Trigger Type and Replica Timeout (e.g., 1800 seconds) into the constructor
             var manualConfig = new JobConfigurationManualTriggerConfig
             {
@@ -104,10 +123,10 @@ namespace PublisherDockerAzureSdkPiperConsole1
                 }
             };
 
-            Console.WriteLine($"Checking if Job '{jobName}' exists or needs provisioning...");
+            Console.WriteLine($"Checking if Job '{jobContainerBaseName}' exists or needs provisioning...");
 
             // 5. Create or Update the job infrastructure 
-            ArmOperation<ContainerAppJobResource> createJobOperation = await jobCollection.CreateOrUpdateAsync(WaitUntil.Completed, jobName, jobData);
+            ArmOperation<ContainerAppJobResource> createJobOperation = await jobCollection.CreateOrUpdateAsync(WaitUntil.Completed, jobContainerBaseName, jobData);
             ContainerAppJobResource acaJob = createJobOperation.Value;
 
             Console.WriteLine($"Job infrastructure verified/created successfully.");

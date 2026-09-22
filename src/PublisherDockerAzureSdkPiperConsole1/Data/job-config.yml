@@ -1,0 +1,15 @@
+# Job Identification details
+jobName: "my-manual-processing-job"
+resourceGroupName: "my-aca-resource-group"
+environmentId: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-aca-resource-group/providers/Microsoft.App/managedEnvironments/my-aca-env"
+location: "eastus"
+
+# Core Container Configuration
+image: "mcr.microsoft.com/k8se/quickstart-jobs:latest"
+cpu: 0.25
+memory: "0.5Gi"
+
+# The specific IJsonModel trigger mappings
+manualTriggerConfig:
+  parallelism: 2
+  replicaCompletionCount: 2
