@@ -5,32 +5,60 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.AppContainers;
 using Azure.ResourceManager.AppContainers.Models;
 using Azure.ResourceManager.Resources;
+using System.ClientModel.Primitives;
 
 
 
 namespace PublisherDockerAzureSdkPiperConsole1
 {
+    public class ContainerStart
+    {
+        public required string ResourceGroupName { get; set; } = "development";
+
+        public required string AppManagedEnvironments { get; set; } = "WebApi-env-20260903153212";
+
+        public required string JobName { get; set; } = "test1";
+    }
+
+    /*
+        webhook
+            job data,
+            container name - (nust exits) and then lookup image
+            image
+            profileName = basic, max, gpu
+      
+     # Required roles service principal (create speficif for that?)
+            Grant permission to start a job only to identities you trust to use the job's secrets and available managed identities.
+        Container Apps Jobs Contributor
+        Container Apps Jobs Operator
+
+    */
+
     public class AcaContainerProvisioning
     {
         public async Task LaunchReceiverContainerWithSdkAsyncCreate(WebhookPayload dto)
         {
-            // 1. Initialise the ArmClient
-            ArmClientOptions clientOptions = new ArmClientOptions();
+            var clientOptions = new ArmClientOptions();
 
             // Force the client to use a working API version for Container Apps / Jobs
-            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01");
+            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01"); // TODO: remove later when all Azure support latest jobs.
 
             // Initialize ArmClient using the custom options
-            ArmClient client = new ArmClient(new DefaultAzureCredential(), defaultSubscriptionId: null, clientOptions);
+            ArmClient client = new ArmClient(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned), defaultSubscriptionId: null, clientOptions);
 
-            string subscriptionId = "";
+            // 2. Automatically resolve and fetch the default subscription from the Azure context
+            SubscriptionResource subscription = await client.GetDefaultSubscriptionAsync();
+
+            // 3. Extract the actual Subscription ID
+            string subscriptionId = subscription.Data.SubscriptionId;
+
             string resourceGroupName = "development";
             string environmentName = "WebApi-env-20260903153212"; // Must already exist
             string jobName = "test1";
 
             // 2. Fetch the Resource Group reference
-            ResourceIdentifier resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
-            ResourceGroupResource resourceGroup = client.GetResourceGroupResource(resourceGroupResourceId);
+            var resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
+            var resourceGroup = client.GetResourceGroupResource(resourceGroupResourceId);
 
             // 3. Access the Job Collection for this Resource Group
             ContainerAppJobCollection jobCollection = resourceGroup.GetContainerAppJobs();
@@ -38,7 +66,7 @@ namespace PublisherDockerAzureSdkPiperConsole1
             // 4. Construct the baseline configuration for the Job
             // Gather the Resource ID of your Container Apps Environment
             string environmentId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}";
-
+            .
             // Pass BOTH the Trigger Type and Replica Timeout (e.g., 1800 seconds) into the constructor
             var manualConfig = new JobConfigurationManualTriggerConfig
             {
@@ -48,7 +76,7 @@ namespace PublisherDockerAzureSdkPiperConsole1
 
             var jobConfig = new ContainerAppJobConfiguration(ContainerAppJobTriggerType.Manual, 1800) // Maximum limit: 18,000 seconds.
             {
-                ReplicaRetryLimit = 1, // 0 vs 1: Setting the limit to 0 means the job fails immediately if it crashes, without any retries.
+                ReplicaRetryLimit = 0, // 0 vs 1: Setting the limit to 0 means the job fails immediately if it crashes, without any retries.
                 ManualTriggerConfig = manualConfig
             };
 
