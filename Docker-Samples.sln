@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.10.12113.136
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -34,8 +33,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "src\WebApplication1\WebApplication1.csproj", "{758F9857-2CBA-4913-8F86-4561141E8167}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppProcessStartSample", "src\ConsoleAppProcessStartSample\ConsoleAppProcessStartSample.csproj", "{729C3D8C-EDC8-4957-9FFC-B15433E17EB0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "", "", "{03DA65A8-F9AB-4A98-A8C1-7ADF0DF0F1C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiverConsole1", "src\ReceiverConsole1\ReceiverConsole1.csproj", "{EEB7A034-2707-4CF4-830E-155067272D4F}"
 EndProject
