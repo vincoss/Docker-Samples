@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
-    <PackageReference Include="Azure.Provisioning.ContainerInstance" Version="1.0.0-beta.1" />
-    <PackageReference Include="Azure.Provisioning.Deployment" Version="1.0.0-beta.2" />
+    <!--<PackageReference Include="Azure.Provisioning.ContainerInstance" Version="1.0.0-beta.1" />
+    <PackageReference Include="Azure.Provisioning.Deployment" Version="1.0.0-beta.2" />-->
     <PackageReference Include="Azure.ResourceManager.AppContainers" Version="1.6.0" />
     <PackageReference Include="Azure.ResourceManager.ContainerInstance" Version="1.4.0" />
     <PackageReference Include="Azure.ResourceManager.ManagedServiceIdentities" Version="1.4.1" />

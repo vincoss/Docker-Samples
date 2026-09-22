@@ -1,17 +1,4 @@
-using Azure;
-using Azure.Core;
-using Azure.Identity;
-using Azure.Provisioning.ContainerInstance;
-using Azure.ResourceManager;
-using Azure.ResourceManager.ContainerInstance;
-using Azure.ResourceManager.Models;
-using Azure.ResourceManager.Resources;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using PublisherDockerAzureSdkPiperConsole1;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json;
 
 
@@ -42,7 +29,7 @@ app.MapPost("/webhook", async (HttpContext context) =>
 
     Console.WriteLine("Launching container via Azure SDK...");
 
-    await new AciContainerProvisioning().LaunchReceiverContainerWithSdkAsyncWorksOnPublicRepoAndAcrManagedIdentity(dto);
+    await new AcaContainerProvisioning().LaunchReceiverContainerWithSdkAsyncCreate(dto);
 
     Console.WriteLine("Container launched...");
 

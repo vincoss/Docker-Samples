@@ -1,7 +1,6 @@
 ﻿using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.Provisioning.Authorization;
 using Azure.ResourceManager;
 using Azure.ResourceManager.ContainerInstance;
 using Azure.ResourceManager.ContainerInstance.Models;

@@ -4,23 +4,29 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.AppContainers;
 using Azure.ResourceManager.AppContainers.Models;
-using Azure.ResourceManager.ContainerInstance;
 using Azure.ResourceManager.Resources;
 
 
 
 namespace PublisherDockerAzureSdkPiperConsole1
 {
-    public class ContainerProvisioning
+    public class AcaContainerProvisioning
     {
         public async Task LaunchReceiverContainerWithSdkAsyncCreate(WebhookPayload dto)
-        { // 1. Initialise the ArmClient
-            ArmClient client = new ArmClient(new DefaultAzureCredential());
+        {
+            // 1. Initialise the ArmClient
+            ArmClientOptions clientOptions = new ArmClientOptions();
 
-            string subscriptionId = "YOUR_SUBSCRIPTION_ID";
-            string resourceGroupName = "Development";
+            // Force the client to use a working API version for Container Apps / Jobs
+            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01");
+
+            // Initialize ArmClient using the custom options
+            ArmClient client = new ArmClient(new DefaultAzureCredential(), defaultSubscriptionId: null, clientOptions);
+
+            string subscriptionId = "";
+            string resourceGroupName = "development";
             string environmentName = "WebApi-env-20260903153212"; // Must already exist
-            string jobName = "my-dynamic-aca-job";
+            string jobName = "test1";
 
             // 2. Fetch the Resource Group reference
             ResourceIdentifier resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
@@ -40,9 +46,9 @@ namespace PublisherDockerAzureSdkPiperConsole1
                 ReplicaCompletionCount = 50
             };
 
-            var jobConfig = new ContainerAppJobConfiguration(ContainerAppJobTriggerType.Manual, 1800)
+            var jobConfig = new ContainerAppJobConfiguration(ContainerAppJobTriggerType.Manual, 1800) // Maximum limit: 18,000 seconds.
             {
-                ReplicaRetryLimit = 1,
+                ReplicaRetryLimit = 1, // 0 vs 1: Setting the limit to 0 means the job fails immediately if it crashes, without any retries.
                 ManualTriggerConfig = manualConfig
             };
 
@@ -53,19 +59,20 @@ namespace PublisherDockerAzureSdkPiperConsole1
                 Template = new ContainerAppJobTemplate()
                 {
                     Containers =
-        {
-            // Fix: Use the generic ContainerAppContainer class here
-            new ContainerAppContainer()
-            {
-                Name = "my-primary-job-container",
-                Image = "mcr.microsoft.com/k8se/quickstart-jobs:latest",
-                Resources = new AppContainerResources
                 {
-                    Cpu = 0.5,
-                    Memory = "0.5"
+                    // Fix: Use the generic ContainerAppContainer class here
+                    new ContainerAppContainer()
+                    {
+                    Name = "my-primary-job-container",
+                    Image = "mcr.microsoft.com/k8se/quickstart-jobs:latest",
+                    //Image = "mcr.microsoft.com/azuredocs/aci-helloworld:latest",
+                    Resources = new AppContainerResources
+                    {
+                        Cpu = 0.5,
+                        Memory = "1.0Gi"
+                                }
                             }
                         }
-                    }
                 }
             };
 
@@ -83,7 +90,8 @@ namespace PublisherDockerAzureSdkPiperConsole1
             var executionTemplate = new ContainerAppJobExecutionTemplate();
             var containerOverride = new JobExecutionContainer
             {
-                Name = "my-primary-job-container" // Must align with the template name given above
+                Name = "my-primary-job-container", // Must align with the template name given above
+                Image = "mcr.microsoft.com/k8se/quickstart-jobs:latest",
             };
 
             containerOverride.Env.Add(new ContainerAppEnvironmentVariable
