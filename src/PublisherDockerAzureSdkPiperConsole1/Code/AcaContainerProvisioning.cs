@@ -161,17 +161,32 @@ namespace PublisherDockerAzureSdkPiperConsole1
 
        public async Task LaunchReceiverContainerWithSdkAsyncExisting(WebhookPayload dto)
         {
-            // 1. Authenticate with Azure (uses local CLI login, Environment variables, or Managed Identity)
-            ArmClient client = new ArmClient(new DefaultAzureCredential());
+            var clientOptions = new ArmClientOptions();
+
+            // Force the client to use a working API version for Container Apps / Jobs
+            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01"); // TODO: remove later when all Azure support latest jobs.
+
+            // Initialize ArmClient using the custom options
+            ArmClient client = new ArmClient(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned), defaultSubscriptionId: null, clientOptions);
+
+            // 2. Automatically resolve and fetch the default subscription from the Azure context
+            SubscriptionResource subscription = await client.GetDefaultSubscriptionAsync();
+
+            // 3. Extract the actual Subscription ID
+            string subscriptionId = subscription.Data.SubscriptionId;
 
             // 2. Define your Azure Resource IDs
-            string subscriptionId = "YOUR_SUBSCRIPTION_ID";
-            string resourceGroupName = "myResourceGroup";
-            string jobName = "my-aca-cron-job";
+            string resourceGroupName = "development";
+            string jobName = "job1";
 
             // 3. Get a reference to your existing Container App Job
             ResourceIdentifier jobId = ContainerAppJobResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, jobName);
             ContainerAppJobResource acaJob = client.GetContainerAppJobResource(jobId);
+
+            // Fetch the full details of the existing job to inspect its template
+            var jobData = await acaJob.GetAsync();
+            string existingImage = jobData.Value.Data.Template.Containers.FirstOrDefault(c => c.Name == jobName)?.Image
+                                  ?? throw new Exception($"Could not find a container named '{jobName}' in the existing job definition.");
 
             // 4. Generate your dynamic connection string / variable for this specific run
             string dynamicConnectionString = $"Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd={Guid.NewGuid()};";
@@ -181,8 +196,11 @@ namespace PublisherDockerAzureSdkPiperConsole1
 
             var containerOverride = new JobExecutionContainer
             {
-                Name = "my-primary-job-container" // Must match the container name defined in the Job
+                Name = jobName,
+                Image = existingImage
             };
+
+            
 
             // Add the dynamic environment variable
             containerOverride.Env.Add(new ContainerAppEnvironmentVariable
