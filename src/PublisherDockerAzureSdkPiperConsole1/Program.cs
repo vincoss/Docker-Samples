@@ -29,7 +29,7 @@ app.MapPost("/webhook", async (HttpContext context) =>
 
     Console.WriteLine("Launching container via Azure SDK...");
 
-    await new AcaContainerProvisioning().LaunchReceiverContainerWithSdkAsyncExisting(dto);
+    await new AcaContainerProvisioning().LaunchExistingContainerAsync(dto);
 
     Console.WriteLine("Container launched...");
 
