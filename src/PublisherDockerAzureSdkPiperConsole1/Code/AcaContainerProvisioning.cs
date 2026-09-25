@@ -230,6 +230,11 @@ namespace PublisherDockerAzureSdkPiperConsole1
             // If you need to log that it worked, check the HTTP status code from Azure:
             var rawResponse = operation.GetRawResponse();
 
+            if (rawResponse.Status == 202 || rawResponse.Status == 200)
+            {
+                Console.WriteLine($"Successfully requested Azure to start the job (HTTP {rawResponse.Status}).");
+            }
+
             Console.WriteLine("================================================================================");
             Console.WriteLine("                      AZURE SDK OPERATION DIAGNOSTICS DUMP                      ");
             Console.WriteLine("================================================================================");

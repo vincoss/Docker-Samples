@@ -82,7 +82,6 @@ curl -X POST https://publisherdockerdotnetpiperconsol.ashyground-0dd3034d.eastus
 curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"development120260908161132/receiverstdinconsole2\"}"
 
 curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"development120260908161132.azurecr.io/receiverstdinconsole2:latest\"}"
-curl -X POST https://publisherdockerazuresdkpipercons.ashyground-0dd3034d.eastus.azurecontainerapps.io/webhook -H "Content-Type: application/json" -d "{\"imageName\":\"webapi20260903153932.azurecr.io/webfrontend:20260903063529\"}"
 
 
 does not have authorization to perform action 'Microsoft.ContainerInstance/containerGroups/write' over scope '/subscriptions/xxx/resourceGroups/Development/providers/Microsoft.ContainerInstance/containerGroups/WebApi-env-20260903153212' or the scope 
