@@ -1,0 +1,45 @@
+﻿
+FROM mcr.microsoft.com/dotnet/sdk:9.0-windowsservercore-ltsc2019 AS build
+
+# ------------------------- Get the node and install Node.js directly
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN pwsh -c '$PSVersionTable.PSVersion'
+
+ENV NODE_VERSION=26.10.0
+
+# Using a clean multi-line string block avoids backtick trailing-space errors
+RUN " \
+    $url = 'https://nodejs.org/dist/v{0}/node-v{0}-win-x64.zip' -f $env:NODE_VERSION; \
+    Write-Host 'DOWNLOAD URL:'; \
+    Write-Host $url; \
+    Invoke-WebRequest -Uri $url -OutFile 'C:\node.zip'; \
+    Expand-Archive -Path 'C:\node.zip' -DestinationPath 'C:\'; \
+    Rename-Item ('C:\node-v{0}-win-x64' -f $env:NODE_VERSION) 'C:\node'; \
+    Remove-Item 'C:\node.zip'; \
+"
+
+RUN Get-ChildItem 'C:\node'
+RUN Write-Host "Node:" (& 'C:\node\node.exe' --version)
+RUN Write-Host "NPM:" (& 'C:\node\npm.cmd' --version)
+
+# Use Windows style path delimiter (semicolon) for appending to PATH (this will update not overwrite path variables)
+RUN [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';C:\node', [EnvironmentVariableTarget]::Machine)
+# -------------------------
+
+# Reset shell back to default Windows CMD to prevent ContainerUser privilege errors
+SHELL ["cmd", "/S", "/C"]
+
+RUN cmd /c dir
+
+WORKDIR /src
+
+RUN cmd /c dir
+
+# Verify if still works
+RUN dotnet --version
+
+CMD ["cmd.exe"]
+
+### docker build -f Dockerfile.node.windows --no-cache -t dotnet9-node .
+### docker run -it --rm --name dotnet9-node dotnet9-node
