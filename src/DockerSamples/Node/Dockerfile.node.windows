@@ -23,11 +23,21 @@ RUN Get-ChildItem 'C:\node'
 RUN Write-Host "Node:" (& 'C:\node\node.exe' --version)
 RUN Write-Host "NPM:" (& 'C:\node\npm.cmd' --version)
 
-# Use Windows style path delimiter (semicolon) for appending to PATH
-ENV PATH="C:\node;${PATH}"
+# Use Windows style path delimiter (semicolon) for appending to PATH (this will update not overwrite path variables)
+RUN [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';C:\node', [EnvironmentVariableTarget]::Machine)
 # -------------------------
 
+# Reset shell back to default Windows CMD to prevent ContainerUser privilege errors
+SHELL ["cmd", "/S", "/C"]
+
+RUN cmd /c dir
+
 WORKDIR /src
+
+RUN cmd /c dir
+
+# Verify if still works
+RUN dotnet --version
 
 CMD ["cmd.exe"]
 
