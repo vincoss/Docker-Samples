@@ -1,7 +1,20 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using System.Text;
 
 Console.WriteLine("ReceiverStdinConsole2 - Application starting up...");
 Console.WriteLine($"Starting args: {string.Join(",", args)}");
+
+Console.WriteLine("ConfigurationBuilder list...");
+
+var config = new ConfigurationBuilder()
+    .AddEnvironmentVariables()
+    .AddCommandLine(args)
+    .Build();
+
+foreach (KeyValuePair<string, string?> entry in config.AsEnumerable())
+{
+    Console.WriteLine($"{entry.Key} = {entry.Value}");
+}
 
 var arr = await ReadWithTimeout();
 if(arr == null || arr.Length <= 0)

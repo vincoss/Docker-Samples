@@ -6,6 +6,8 @@ using Azure.ResourceManager.AppContainers;
 using Azure.ResourceManager.AppContainers.Models;
 using Azure.ResourceManager.Resources;
 using System.ClientModel.Primitives;
+using System.ComponentModel;
+using static Azure.Core.HttpHeader;
 
 
 
@@ -54,24 +56,24 @@ namespace PublisherDockerAzureSdkPiperConsole1
 
     public class AcaContainerProvisioning
     {
-        public async Task LaunchReceiverContainerWithSdkAsyncCreate(WebhookPayload dto)
+        public async Task CrateContainerJobAndLaunchContainer(WebhookPayload dto)
         {
             var clientOptions = new ArmClientOptions();
 
-            // Force the client to use a working API version for Container Apps / Jobs
-            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01"); // TODO: remove later when all Azure support latest jobs.
+            /*
+                Force the client to use a working API version for Container Apps / Jobs 
+                TODO: remove later when all Azure support latest jobs.
+            */
+            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01");
 
-            // Initialize ArmClient using the custom options
-            ArmClient client = new ArmClient(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned), defaultSubscriptionId: null, clientOptions);
+            var client = new ArmClient(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned), defaultSubscriptionId: null, clientOptions);
 
-            // 2. Automatically resolve and fetch the default subscription from the Azure context
+            // Find default subscription.
             SubscriptionResource subscription = await client.GetDefaultSubscriptionAsync();
+            var subscriptionId = subscription.Data.SubscriptionId;
 
-            // 3. Extract the actual Subscription ID
-            string subscriptionId = subscription.Data.SubscriptionId;
-
-            string resourceGroupName = "development";
-            string environmentName = "WebApi-env-20260903153212"; // Must already exist
+            var resourceGroupName = "development";
+            var environmentName = "WebApi-env-20260903153212"; // Must already exist
 
             string jobContainerBaseName = "org-test-container";
 
@@ -159,30 +161,49 @@ namespace PublisherDockerAzureSdkPiperConsole1
             Console.WriteLine($"Execution ID/Name: {executionResult.Name}");
         }
 
-       public async Task LaunchReceiverContainerWithSdkAsyncExisting(WebhookPayload dto)
+       public async Task LaunchExistingContainerAsync(WebhookPayload dto)
         {
-            // 1. Authenticate with Azure (uses local CLI login, Environment variables, or Managed Identity)
-            ArmClient client = new ArmClient(new DefaultAzureCredential());
+            var clientOptions = new ArmClientOptions();
+
+            /*
+                Force the client to use a working API version for Container Apps / Jobs 
+                TODO: remove later when all Azure support latest jobs.
+            */
+            clientOptions.SetApiVersion(new Azure.Core.ResourceType("Microsoft.App/jobs"), "2026-01-01");
+
+            var client = new ArmClient(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned), defaultSubscriptionId: null, clientOptions);
+
+            // Find default subscription.
+            SubscriptionResource subscription = await client.GetDefaultSubscriptionAsync();
+            var subscriptionId = subscription.Data.SubscriptionId;
 
             // 2. Define your Azure Resource IDs
-            string subscriptionId = "YOUR_SUBSCRIPTION_ID";
-            string resourceGroupName = "myResourceGroup";
-            string jobName = "my-aca-cron-job";
+            string resourceGroupName = "development";
+            string jobName = "job1";
 
             // 3. Get a reference to your existing Container App Job
             ResourceIdentifier jobId = ContainerAppJobResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, jobName);
-            ContainerAppJobResource acaJob = client.GetContainerAppJobResource(jobId);
+            ContainerAppJobResource acaJobResource = client.GetContainerAppJobResource(jobId);
+
+            // Fetch the full details of the existing job to inspect its template and find actual container.
+            var jobData = await acaJobResource.GetAsync();
+            var jobContainer = jobData.Value.Data.Template.Containers.FirstOrDefault(c => string.Equals(c.Name, jobName, StringComparison.OrdinalIgnoreCase));
+
+            if(jobContainer == null)
+            {
+                throw new InvalidOperationException($"Could not find a container named '{jobName}' in the existing job definition.");
+            }
 
             // 4. Generate your dynamic connection string / variable for this specific run
             string dynamicConnectionString = $"Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd={Guid.NewGuid()};";
 
-            // 5. Create an execution template override to inject the new environment variable
-            var executionTemplate = new ContainerAppJobExecutionTemplate();
-
             var containerOverride = new JobExecutionContainer
             {
-                Name = "my-primary-job-container" // Must match the container name defined in the Job
+                Name = jobName,
+                Image = jobContainer.Image
             };
+
+            // args, commands, envs
 
             // Add the dynamic environment variable
             containerOverride.Env.Add(new ContainerAppEnvironmentVariable
@@ -191,21 +212,80 @@ namespace PublisherDockerAzureSdkPiperConsole1
                 Value = dynamicConnectionString
             });
 
-            executionTemplate.Containers.Add(containerOverride);
+            //containerOverride.Args.a
+         
+
+            // 5. Create an execution template override to inject the new environment variable
+            var containerAppJobExecutionTemplate = new ContainerAppJobExecutionTemplate();
+            containerAppJobExecutionTemplate.Containers.Add(containerOverride);
 
             Console.WriteLine($"Triggering ACA Job execution with unique connection string...");
 
-            // 6. Start the job execution and pass the template overrides
-            // This spins up the container, injects the variable, executes it, and shuts it down.
-            ArmOperation<ContainerAppJobExecutionBase> operation = await acaJob.StartAsync(WaitUntil.Completed, executionTemplate);
+            // Start the job execution and pass the template overrides with arguments and environment variables.
+            var operation = await acaJobResource.StartAsync(WaitUntil.Started, containerAppJobExecutionTemplate);
 
-            ContainerAppJobExecutionBase executionResult = operation.Value;
+            Console.WriteLine($"$Job {jobName} Started Successfully!");
 
-            Console.WriteLine($"Job Execution Triggered Successfully!");
-            Console.WriteLine($"Execution Name: {executionResult.Name}");
-            Console.WriteLine($"Execution Status: {executionResult.Id}"); // Typically "Running" or "Succeeded"
+            // 2. FIX: Do NOT call operation.Value here. 
+            // If you need to log that it worked, check the HTTP status code from Azure:
+            var rawResponse = operation.GetRawResponse();
+
+            Console.WriteLine("================================================================================");
+            Console.WriteLine("                      AZURE SDK OPERATION DIAGNOSTICS DUMP                      ");
+            Console.WriteLine("================================================================================");
+
+            // --- Section A: ArmOperation Object SDK Trackers ---
+            Console.WriteLine("\n[1. SDK Trackers & Status]");
+            Console.WriteLine($"* Operation ID/Token : {operation.Id}");
+            Console.WriteLine($"* HasCompleted       : {operation.HasCompleted}");
+            Console.WriteLine($"* HasValue (Ready?)  : {operation.HasValue}");
+
+            // --- Section B: HTTP Metadata ---
+            Console.WriteLine("\n[2. HTTP Transport Status]");
+            Console.WriteLine($"* HTTP Status Code   : {rawResponse.Status}");
+            Console.WriteLine($"* Reason Phrase      : {rawResponse.ReasonPhrase}");
+            Console.WriteLine($"* Client Request ID  : {rawResponse.ClientRequestId}");
+
+            // --- Section C: Network Wire Headers ---
+            Console.WriteLine("\n[3. All HTTP Wire Headers]");
+            foreach (var header in rawResponse.Headers)
+            {
+                Console.WriteLine($"  -> {header.Name}: {header.Value}");
+            }
+
+            // --- Section D: Raw Azure Response Payload Data ---
+            Console.WriteLine("\n[4. Dynamic Response Body Content (JSON)]");
+            if (rawResponse.Content != null)
+            {
+                string jsonContent = rawResponse.Content.ToString();
+                Console.WriteLine(jsonContent);
+            }
+            else
+            {
+                Console.WriteLine("  (Empty response body footprint)");
+            }
+            Console.WriteLine("================================================================================");
         }
 
+        public class Job
+        {
+            public required string Name { get; set; }   
+
+            public IList<string> Args { get; set; } = new List<string>();
+
+            public IList<string> Commands { get; } = new List<string>();
+
+            public IList<EnvironmentVariable> Envs { get; } = new List<EnvironmentVariable>();
+
+            public class EnvironmentVariable
+            {
+                public required string Name { get; set; }
+
+                public string? Value { get; set; }
+
+                public string? SecretRef { get; set; }
+            }
+        }
     }
 }
 
