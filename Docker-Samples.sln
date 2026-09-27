@@ -53,6 +53,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureManagedIdentityTesterC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleContainerController", "src\SampleContainerController\SampleContainerController.csproj", "{4F0E7762-938D-4064-8C5B-991F30D5EF7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleDotNetTestcontainersContainerController", "src\SampleDotNetTestcontainersContainerController\SampleDotNetTestcontainersContainerController.csproj", "{23A3E4E3-AE89-435D-A81E-716570EB7B0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleRawHTTP", "src\SampleRawHTTP\SampleRawHTTP.csproj", "{ECE1E6F5-A7E9-4411-B102-47313E9378C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +151,14 @@ Global
 		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
