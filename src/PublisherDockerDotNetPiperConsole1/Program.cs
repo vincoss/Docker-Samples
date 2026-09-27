@@ -72,7 +72,7 @@ async Task LaunchReceiverContainerWithSdkAsync(string payload)
             Tty = false,         // Must be false for binary streams
             HostConfig = new HostConfig { AutoRemove = true }
         };
-
+       
         Console.WriteLine("Creating container...");
         var response = await client.Containers.CreateContainerAsync(createParams);
         var containerId = response.ID;
