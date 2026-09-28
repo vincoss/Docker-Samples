@@ -1,7 +1,7 @@
-﻿using SampleContainerController.Dto;
+﻿using SampleAzureContainerController.Dto;
 
 
-namespace SampleContainerController.Interface
+namespace SampleAzureContainerController.Interface
 {
     public interface IAppContainerService
     {

@@ -51,11 +51,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{9A8D196A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureManagedIdentityTesterConsole", "src\AzureManagedIdentityTesterConsole\AzureManagedIdentityTesterConsole.csproj", "{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleContainerController", "src\SampleContainerController\SampleContainerController.csproj", "{4F0E7762-938D-4064-8C5B-991F30D5EF7C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleDotNetTestcontainersContainerController", "src\SampleDotNetTestcontainersContainerController\SampleDotNetTestcontainersContainerController.csproj", "{23A3E4E3-AE89-435D-A81E-716570EB7B0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleRawHTTP", "src\SampleRawHTTP\SampleRawHTTP.csproj", "{ECE1E6F5-A7E9-4411-B102-47313E9378C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAzureContainerController", "src\SampleAzureContainerController\SampleAzureContainerController.csproj", "{0428BE98-AC06-785C-FA3E-5A685DEE2653}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleDockerContainerController", "src\SampleDockerContainerController\SampleDockerContainerController.csproj", "{1958AB11-68A8-4DBD-A41C-CDDA78AE8ED1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,10 +149,6 @@ Global
 		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C78BF81-DB07-48A9-B4C4-CD026F5049A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F0E7762-938D-4064-8C5B-991F30D5EF7C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23A3E4E3-AE89-435D-A81E-716570EB7B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -159,6 +157,14 @@ Global
 		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECE1E6F5-A7E9-4411-B102-47313E9378C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0428BE98-AC06-785C-FA3E-5A685DEE2653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0428BE98-AC06-785C-FA3E-5A685DEE2653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0428BE98-AC06-785C-FA3E-5A685DEE2653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0428BE98-AC06-785C-FA3E-5A685DEE2653}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1958AB11-68A8-4DBD-A41C-CDDA78AE8ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1958AB11-68A8-4DBD-A41C-CDDA78AE8ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1958AB11-68A8-4DBD-A41C-CDDA78AE8ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1958AB11-68A8-4DBD-A41C-CDDA78AE8ED1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,11 @@
-﻿using SampleContainerController.Dto;
-using SampleContainerController.Interface;
+﻿using SampleAzureContainerController.Dto;
+using SampleAzureContainerController.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 
-namespace SampleContainerController.Services
+namespace SampleAzureContainerController.Services
 {
     public class DockerDotNetContainerService : IAppContainerService
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace SampleContainerController.Dto
+namespace SampleAzureContainerController.Dto
 {
     public class ContainerJobDto
     {
@@ -9,7 +9,7 @@ namespace SampleContainerController.Dto
 
         public required string ImageName { get; set; }
 
-        public IList<string> Args { get; set; } = new List<string>();
+        public IList<string> Args { get;} = new List<string>();
 
         public IList<string> Commands { get; } = new List<string>();
 
