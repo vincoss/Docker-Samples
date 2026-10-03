@@ -14,7 +14,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Docker.DotNet.Enhanced" Version="4.3.3" />
 		<PackageReference Include="Azure.ResourceManager.AppContainers" Version="1.6.0" />
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 	</ItemGroup>
