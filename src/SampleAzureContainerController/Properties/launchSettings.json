@@ -1,7 +1,8 @@
 {
   "profiles": {
     "SampleContainerController": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "resourceGroupName=development"
     },
     "Container (Dockerfile)": {
       "commandName": "Docker"

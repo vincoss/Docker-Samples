@@ -6,23 +6,36 @@ using System.Text.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
-builder.Services.AddHostedService<QueueBackgroundService>();
-builder.Services.AddSingleton<IAppContainerService, AppContainerService>();
-builder.Services.AddSingleton<IProcessingService, ProcessingService>();
+services.AddSingleton<IAppContainerService>(provider =>
+{
+    var resourceGroupName = builder.Configuration["resourceGroupName"];
+
+    if(string.IsNullOrWhiteSpace(resourceGroupName))
+    {
+        throw new ArgumentNullException(nameof(resourceGroupName));
+    }
+
+    Console.WriteLine($"Building {nameof(AppContainerService)} with resource group: {resourceGroupName}");
+
+    var logger = provider.GetRequiredService<ILogger<AppContainerService>>();
+
+    return new AppContainerService(resourceGroupName, logger);
+});
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/webhook", async (HttpContext context, [FromServices] IProcessingService processingService, CancellationToken cancellationToken) =>
+app.MapPost("/webhook", async (HttpContext context, [FromServices] IAppContainerService appContainerService, CancellationToken cancellationToken) =>
 {
     using var reader = new StreamReader(context.Request.Body);
     var body = await reader.ReadToEndAsync();
 
     if (string.IsNullOrWhiteSpace(body))
     {
-        Console.Error.WriteLine("Request body is required");
+        Console.Error.WriteLine("Request body is required!");
         return Results.BadRequest();
     }
 
@@ -43,7 +56,7 @@ app.MapPost("/webhook", async (HttpContext context, [FromServices] IProcessingSe
     }
 
     // Validate the core required identifiers
-    if (payload == null || string.IsNullOrWhiteSpace(payload.jobContainerName))
+    if (payload == null || string.IsNullOrWhiteSpace(payload.JobContainerName))
     {
         Console.Error.WriteLine("Missing jobContainerName inside payload.");
         return Results.BadRequest("Missing required jobContainerName property.");
@@ -51,9 +64,10 @@ app.MapPost("/webhook", async (HttpContext context, [FromServices] IProcessingSe
 
     Console.WriteLine("Launching container via Azure SDK...");
 
-    await processingService.RunAsync(payload, cancellationToken);
+    var jobData = GetJob(payload);
+    await appContainerService.StartAsync(jobData, cancellationToken);
 
-    Console.WriteLine($"Container [{payload.jobContainerName}] execution request completed...");
+    Console.WriteLine($"Container [{payload.JobContainerName}] execution request completed...");
 
     return Results.Accepted();
 });
@@ -61,3 +75,20 @@ app.MapPost("/webhook", async (HttpContext context, [FromServices] IProcessingSe
 Console.WriteLine("PublisherDockerDotNetPiperConsole1 - started...");
 
 app.Run();
+
+static ContainerJobDto GetJob(WebhookPayloadDto job)
+{
+    var contarnerJob = new ContainerJobDto
+    {
+        Name = job.JobContainerName,
+        ImageName = job.ImageName
+    };
+
+    contarnerJob.Envs.Add(new ContainerJobDto.EnvironmentVariable
+    {
+        Name = nameof(WebhookPayloadDto.JobData),
+        Value = job.JobData.ToString()
+    });
+    
+    return contarnerJob;
+}
