@@ -1,4 +1,9 @@
 ﻿
+### Set timeout
+```
+Cmd = new List<string> { "timeout", "3600" },
+```
+
 
 ### Samples CURL
 ```
