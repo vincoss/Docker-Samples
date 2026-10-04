@@ -8,6 +8,12 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
 		<DockerfileFile>Dockerfile.linux</DockerfileFile>
+
+		<!-- ─── GC OPTIMIZATIONS ─── -->
+		<!-- Disables Server GC, enabling Workstation GC -->
+		<ServerGarbageCollection>false</ServerGarbageCollection>
+		<!-- Sets latency mode to Batch execution -->
+		<GCLatencyMode>Batch</GCLatencyMode>
 	</PropertyGroup>
 
 	<ItemGroup>

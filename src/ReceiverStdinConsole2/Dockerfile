@@ -21,6 +21,17 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./ReceiverStdinConsole2.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# ─── GARBAGE COLLECTION TUNING FOR SHORT-LIVED JOBS ───
+
+# 1. Disable Server GC and force Workstation GC (reduces idle base memory drastically)
+ENV DOTNET_gcServer=0
+
+# 2. Prevent the GC from instantly consuming large chunks of memory
+ENV DOTNET_GCLatencyMode=Batch
+
+# 3. (Optional) Retain less memory when a collection happens
+ENV DOTNET_GCHeapHardLimitPercent=80
+
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
