@@ -5,6 +5,9 @@ namespace SampleDockerContainerController.Dto
 {
     public class ContainerJobDto
     {
+        /// <summary>
+        /// Docker let Docker automatically assign a random name.
+        /// </summary>
         public required string Name { get; set; }
 
         public required string ImageName { get; set; }

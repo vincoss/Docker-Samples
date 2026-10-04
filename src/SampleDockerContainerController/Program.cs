@@ -17,7 +17,7 @@ services.AddSingleton<IAppContainerService>(provider =>
 
 var app = builder.Build();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.MapPost("/webhook", async (HttpContext context, [FromServices] IAppContainerService appContainerService, CancellationToken cancellationToken) =>
 {
