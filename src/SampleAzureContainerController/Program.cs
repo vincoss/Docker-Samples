@@ -4,6 +4,7 @@ using SampleAzureContainerController.Interface;
 using SampleAzureContainerController.Services;
 using System.Text.Json;
 
+// dotnet SampleAzureContainerController.dll resourceGroupName=development
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
