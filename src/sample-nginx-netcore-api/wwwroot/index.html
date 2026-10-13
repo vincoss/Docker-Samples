@@ -1,0 +1,30 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+</head>
+<body>
+
+    <h1>Hello, World!</h1>
+    <p><strong>Time:</strong> <span id="clock">Loading...</span></p>
+    <p><strong>Date:</strong> <span id="date">Loading...</span></p>
+    <p><strong>Timezone:</strong> <span id="timezone">Loading...</span></p>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+
+            document.getElementById('clock').textContent = now.toLocaleTimeString();
+            document.getElementById('date').textContent = now.toLocaleDateString();
+            document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+</body>
+</html>
