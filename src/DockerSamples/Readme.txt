@@ -1,21 +1,10 @@
 ﻿
-## Tasks
-Task.Delay(-1) Background Workers: Keeping a console host, service, or Discord bot alive so event handlers can run.
-
-## Powershell directory
-```
-${PWD}		Print Working Directory.
-```
-
 
 ## Resources
 
 https://github.com/moby/moby
 https://github.com/dotnet-architecture/eShopOnContainers
 https://www.linode.com/docs/applications/containers/
-
-
-
 
 https://learn.microsoft.com/en-au/visualstudio/containers/?view=visualstudio
 https://learn.microsoft.com/en-us/virtualization/windowscontainers/
