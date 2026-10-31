@@ -1,0 +1,5 @@
+FROM ollama/ollama:latest
+
+# Optional: If you want to automatically pre-download a model during the image build,
+# you can uncomment the lines below. (Requires an active internet connection during build)
+# RUN ollama serve & sleep 5 && ollama run llama3
