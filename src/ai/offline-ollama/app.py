@@ -8,22 +8,26 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama-backend:11434")
 # Initialize the Ollama Client
 client = ollama.Client(host=OLLAMA_HOST)
 
-# Using Llama 3.1 8B as a standard local GPU model example
-MODEL_NAME = "llama3.1"
+def get_installed_models():
+    """Fetch the list of downloaded models from the Ollama backend container."""
+    try:
+        model_list_data = client.list()
+        models = [m['model'] for m in model_list_data.get('models', [])]
+        return models if models else ["llama3.1"]
+    except Exception:
+        return ["llama3.1"]
 
 def extract_content(content):
     """Helper function to cleanly extract a plain string from Gradio message objects."""
     if isinstance(content, str):
         return content
     if isinstance(content, list):
-        # Extract and combine the 'text' keys from block items
         return "".join([block.get("text", "") for block in content if isinstance(block, dict) and block.get("type") == "text"])
     return str(content)
 
-def predict(message, history):
+def predict(message, history, model_name):
     messages = []
     
-    # Dynamically handle both Dictionary and Tuple/List history formats
     for msg in history:
         if isinstance(msg, dict):
             role = msg.get('role')
@@ -36,30 +40,63 @@ def predict(message, history):
                 messages.append({'role': 'user', 'content': extract_content(user_msg)})
             if ai_msg:
                 messages.append({'role': 'assistant', 'content': extract_content(ai_msg)})
-    
-    # Append the newest user prompt safely handled
+                
     messages.append({'role': 'user', 'content': extract_content(message)})
     
     try:
-        # Stream the response from the local model container
-        response = client.chat(model=MODEL_NAME, messages=messages, stream=True)
+        response = client.chat(model=model_name, messages=messages, stream=True)
         partial_message = ""
         for chunk in response:
             if 'message' in chunk and 'content' in chunk['message']:
                 partial_message += chunk['message']['content']
                 yield partial_message
     except Exception as e:
-        yield (
-            f"Error connecting to local model: {str(e)}\n\n"
-            f"💡 Quick Fix: Enter the ollama container and run: docker exec -it ollama_gpu ollama run {MODEL_NAME}"
-        )
+        yield f"Error running '{model_name}': {str(e)}"
 
-# Initialize the web interface
-demo = gr.ChatInterface(
-    fn=predict, 
-    title="Pure Local Offline LLM Chat",
-    description="Running entirely on your host GPU via Docker Compose."
-)
+available_models = get_installed_models()
+default_model = available_models if available_models else "llama3.1"
+
+# FIX: CSS expanded to enforce 100% viewport height and strip wrapper constraints
+head_style = """
+<style>
+    /* Force container to match browser viewport sizing */
+    html, body, div.gradio-container, .gradio-container {
+        max-width: unset !important;
+        width: 100% !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    /* Let the inner block layouts expand completely */
+    .contain {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+    }
+</style>
+"""
+
+# FIX: Main wrapper configured with fill_height=True
+with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, head=head_style) as demo:
+    
+    # Using a modern sidebar design to optimize layout and preserve vertical height
+    with gr.Sidebar(label="Controls", open=True):
+        gr.Markdown("# 🦙 Local LLM Chat")
+        model_dropdown = gr.Dropdown(
+            choices=available_models,
+            value=default_model,
+            label="Select Active Model",
+            info="Choose a model to process your prompts",
+            interactive=True
+        )
+        
+    # FIX: Explicitly sizing ChatInterface to fill all horizontal and vertical canvas room
+    chat = gr.ChatInterface(
+        fn=predict,
+        additional_inputs=[model_dropdown],
+        fill_width=True,
+        fill_height=True
+    )
 
 if __name__ == "__main__":
     demo.launch(server_name="0.0.0.0", server_port=8080, share=False)
