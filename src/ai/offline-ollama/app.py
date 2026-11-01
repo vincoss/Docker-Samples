@@ -13,20 +13,21 @@ def get_installed_models():
     try:
         model_list_data = client.list()
         models = [m['model'] for m in model_list_data.get('models', [])]
-        return models if models else ["llama3.1"]
+        return models if models else []
     except Exception:
-        # Return fallback instantly without hanging the application
-        return ["llama3.1"]
+        # Avoid blocking UI startup if backend container is booting up
+        return []
 
 def refresh_models_on_load():
-    """Triggered after the UI loads to dynamically populate the dropdown without blocking startup."""
+    """Triggered after the UI loads to dynamically populate the dropdown.
+    If no models are installed, choices remain empty and nothing is selected."""
     models = get_installed_models()
     if models:
-        # Update the choices
-        return gr.update(choices=models)
+        # Populates the choices and automatically selects the first real available model
+        return gr.update(choices=models, value=None)
     else:
-        # No models found, display a message
-        return "No models found."
+        # Strips out placeholder options entirely so nothing is selected
+        return gr.update(choices=[], value=None)
 
 def extract_content(content):
     """Helper function to cleanly extract text from complex multi-modal Gradio message structures."""
@@ -50,6 +51,11 @@ def read_text_file(filepath):
         return f"\n[Error reading file: {str(e)}]\n"
 
 def predict(message, history, model_name):
+    # Prevent crashing if user tries to submit a message before choosing/downloading a model
+    if not model_name:
+        yield "⚠️ Please select a model from the sidebar controls before sending a prompt."
+        return
+
     messages = []
     
     # 1. Process Past Conversation History
@@ -65,7 +71,7 @@ def predict(message, history, model_name):
             if ai_msg:
                 messages.append({'role': 'assistant', 'content': extract_content(ai_msg)})
 
-    # 2. Process Current User Message & Appended Text Files
+    # 2. Process Current User Message & All Appended Text Files
     current_text = ""
     file_contents = ""
     
@@ -73,6 +79,7 @@ def predict(message, history, model_name):
         current_text = message.get("text", "")
         files = message.get("files", [])
         
+        # Iterates cleanly over multiple files selected simultaneously
         for f in files:
             file_path = f.get("path") if isinstance(f, dict) else f
             if file_path:
@@ -115,14 +122,13 @@ head_style = """
 </style>
 """
 
-# FIX: Boot immediately with a standard placeholder list, rather than calling the API globally
 with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, head=head_style) as demo:
     
     with gr.Sidebar(label="Controls", open=True):
-        gr.Markdown("# 🦙 Local Text File Chat")
+        gr.Markdown("# 🦙 Gabo")
         model_dropdown = gr.Dropdown(
-            choices=[], # Starts empty instantly
-            value=None, # No default selection until background analysis checks out
+            choices=[], 
+            value=None, 
             label="Select Active Model",
             info="Drop text files (.txt, .md, .py, .csv) directly into the chat prompt area.",
             interactive=True
@@ -136,8 +142,6 @@ with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, he
         multimodal=True
     )
     
-    # FIX: Async load hook. When the web app finishes mounting in the browser, 
-    # it hits this background event to populate your drop-down options without blocking the initial view.
     demo.load(fn=refresh_models_on_load, inputs=None, outputs=[model_dropdown])
 
 if __name__ == "__main__":
