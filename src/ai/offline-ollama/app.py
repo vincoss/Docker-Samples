@@ -51,14 +51,11 @@ def read_text_file(filepath):
         return f"\n[Error reading file: {str(e)}]\n"
 
 def predict(message, history, model_name):
-    # Prevent crashing if user tries to submit a message before choosing/downloading a model
     if not model_name:
         yield "⚠️ Please select a model from the sidebar controls before sending a prompt."
         return
 
     messages = []
-    
-    # 1. Process Past Conversation History
     for msg in history:
         if isinstance(msg, dict):
             role = msg.get('role')
@@ -71,15 +68,11 @@ def predict(message, history, model_name):
             if ai_msg:
                 messages.append({'role': 'assistant', 'content': extract_content(ai_msg)})
 
-    # 2. Process Current User Message & All Appended Text Files
     current_text = ""
     file_contents = ""
-    
     if isinstance(message, dict):
         current_text = message.get("text", "")
         files = message.get("files", [])
-        
-        # Iterates cleanly over multiple files selected simultaneously
         for f in files:
             file_path = f.get("path") if isinstance(f, dict) else f
             if file_path:
@@ -122,10 +115,11 @@ head_style = """
 </style>
 """
 
-with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, head=head_style) as demo:
+# FIX 1: Removed head=head_style from gr.Blocks constructor
+with gr.Blocks(title="ChatGABO", fill_width=True, fill_height=True) as demo:
     
     with gr.Sidebar(label="Controls", open=True):
-        gr.Markdown("# 🦙 Gabo")
+        gr.Markdown("# 🦙 ChatGABO")
         model_dropdown = gr.Dropdown(
             choices=[], 
             value=None, 
@@ -134,6 +128,7 @@ with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, he
             interactive=True
         )
         
+    # FIX 2: Removed files=[...] argument. setting multimodal=True handles this natively.
     chat = gr.ChatInterface(
         fn=predict,
         additional_inputs=[model_dropdown],
@@ -145,4 +140,5 @@ with gr.Blocks(title="Local GPU LLM Chat", fill_width=True, fill_height=True, he
     demo.load(fn=refresh_models_on_load, inputs=None, outputs=[model_dropdown])
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=8080, share=False)
+    # FIX 1 (cont.): Moved head=head_style to the launch configuration
+    demo.launch(server_name="0.0.0.0", server_port=8080, share=False, head=head_style)
