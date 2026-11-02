@@ -28,20 +28,25 @@ services:
         hard: 67108864
 
     environment:
-      # Ollama configuration
       OLLAMA_HOST: 0.0.0.0:11434
 
-      # Enable concurrent inference
-      OLLAMA_NUM_PARALLEL: 32
+      # GPU inference concurrency
+      OLLAMA_NUM_PARALLEL: "4"
 
-      # Keep one model loaded in GPU memory
-      OLLAMA_MAX_LOADED_MODELS: 1
+      # Keep one model loaded
+      OLLAMA_MAX_LOADED_MODELS: "1"
 
-      # Keep model loaded between requests, Indefinitely
-      OLLAMA_KEEP_ALIVE: -1
+      # Context window
+      OLLAMA_CONTEXT_LENGTH: "8192"
 
-      # Optional: reduce excessive model loading
-      OLLAMA_MAX_QUEUE: 128
+      # Keep model loaded indefinitely
+      OLLAMA_KEEP_ALIVE: "-1"
+
+      # Request queue
+      OLLAMA_MAX_QUEUE: "32"
+
+      # GPU memory optimization
+      OLLAMA_FLASH_ATTENTION: "1"
 
     volumes:
       - ./ollama_storage:/root/.ollama
@@ -147,3 +152,6 @@ volumes:
 
 # Run a Real-Time Performance Benchmark
 # docker exec -it ollama_gpu ollama run qwen2.5-coder:1.5b "Write a quick Python script to calculate Fibonacci sequence, then output performance metrics." --verbose
+
+# Check loaded models and GPU allocation:
+# docker exec -it ollama_gpu ollama ps
