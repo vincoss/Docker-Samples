@@ -99,6 +99,10 @@ services:
       # Python application configuration
       PYTHONUNBUFFERED: "1"
 
+      OLLAMA_TIMEOUT: "300"
+      
+      LOG_LEVEL: "INFO"
+
     depends_on:
       ollama-backend:
         condition: service_healthy
@@ -145,6 +149,9 @@ volumes:
 # docker exec -it ollama_gpu ollama pull deepseek-coder:1.3b
 # docker exec -it ollama_gpu ollama pull qwen2.5-coder:3b
 # docker exec -it ollama_gpu ollama pull qwen2.5-coder:7b-instruct-q3_K_M
+# docker exec -it ollama_gpu ollama pull deepseek-coder:6.7b-instruct-q3_K_M
+
+# Vision models
 # docker exec -it ollama_gpu ollama pull deepseek-coder:6.7b-instruct-q3_K_M
 
 # Check NVIDIA Docker Visibility

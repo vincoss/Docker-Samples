@@ -2,30 +2,24 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Prevent Python output buffering
 ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
 
-# Ollama backend address
-ENV OLLAMA_HOST=http://ollama-backend:11434
+COPY requirements.txt /app/requirements.txt
 
-# Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
-    "gradio>=5.0,<7.0" \
-    "ollama>=0.4.0"
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy application
 COPY app.py /app/app.py
 
 EXPOSE 8080
 
-# Start ChatGABO
 CMD ["python", "-u", "app.py"]
 
 
 # --- MANUAL TERMINAL COMMANDS (FOR STANDALONE RUNNING WITHOUT COMPOSE) ---
 # Build command:
-# docker build -f Dockerfile.chat-ui --no-cache -t python_chat_ui .
+# docker build -f dockerfile.chat-ui --no-cache -t python_chat_ui .
 #
 # Run command (FIXED: Uses the explicit '-e' flag for setting environment variables):
-# docker run -it -p 8080:8080 -e OLLAMA_HOST=http://localhost:11434 python_chat_ui
+# docker run -it -p 8080:8080 -e OLLAMA_HOST=http://ollama-backend:11434 python_chat_ui
