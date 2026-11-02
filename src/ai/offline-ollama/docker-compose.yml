@@ -32,7 +32,7 @@ services:
       OLLAMA_HOST: 0.0.0.0:11434
 
       # Model concurrency
-      OLLAMA_NUM_PARALLEL: 2
+      OLLAMA_NUM_PARALLEL: 32
       OLLAMA_MAX_LOADED_MODELS: 1
 
       # Keep models loaded for faster responses
