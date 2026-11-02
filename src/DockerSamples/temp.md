@@ -1,6 +1,5 @@
 ﻿https://learn.microsoft.com/en-us/azure/container-instances/container-instances-overview
 
-
 console app .NET Core
 pass argument SQL connection string
 serverless
@@ -41,15 +40,10 @@ Environment.GetEnvironmentVariable
 
 the secrets are dynamic, for every container instance
 
-I have a docker container that is activated by push webhook, when the container starts needs to get the SQL connection string from somewhere secure, what are options, container is cloud platform agnostic
+docker container that is activated by push webhook, when the container starts needs to get the SQL connection string from somewhere secure, what are options, container is cloud platform agnostic
 
 podman .NET
 	docker in docker
-
-qutable nees
-	container name
-	arguments
-	environment Linux or Windows
 
 ## Kill container
 

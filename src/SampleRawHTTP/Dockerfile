@@ -10,10 +10,10 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/SampleRawHTTP/SampleRawHTTP.csproj", "src/SampleRawHTTP/"]
-RUN dotnet restore "./src/SampleRawHTTP/SampleRawHTTP.csproj"
+COPY ["SampleRawHTTP.csproj", "."]
+RUN dotnet restore "./SampleRawHTTP.csproj"
 COPY . .
-WORKDIR "/src/src/SampleRawHTTP"
+WORKDIR "/src/."
 RUN dotnet build "./SampleRawHTTP.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

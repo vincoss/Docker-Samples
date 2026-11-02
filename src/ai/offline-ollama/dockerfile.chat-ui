@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies cleanly
+RUN pip install --no-cache-dir gradio ollama
+
+COPY app.py /app/app.py
+
+EXPOSE 8080
+
+# Default fallback environment variable
+ENV OLLAMA_HOST=http://localhost:11434
+
+CMD ["python", "app.py"]
+
+
+# --- MANUAL TERMINAL COMMANDS (FOR STANDALONE RUNNING WITHOUT COMPOSE) ---
+# Build command:
+# docker build -f Dockerfile.chat-ui --no-cache -t python_chat_ui .
+#
+# Run command (FIXED: Uses the explicit '-e' flag for setting environment variables):
+# docker run -it -p 8080:8080 -e OLLAMA_HOST=http://localhost:11434 python_chat_ui
