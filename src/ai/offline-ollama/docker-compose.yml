@@ -1,18 +1,64 @@
+
 services:
-  # The GPU Model Server (Ollama)
+  # ==========================================
+  # GPU MODEL SERVER - OLLAMA
+  # ==========================================
   ollama-backend:
     build:
       context: .
-      dockerfile: dockerfile.ollama  # FIX: Kept consistent with standard capitalized naming
+      dockerfile: dockerfile.ollama
+
     container_name: ollama_gpu
-    # --- PERFORMANCE & MEMORY FIXES ---
-    ipc: host  # Maps --ipc=host
-    ulimits:   # Maps your --ulimit configurations
-      memlock: -1
-      stack: 67108864
-    # ----------------------------------
+
+    restart: unless-stopped
+
+    # GPU acceleration
+    gpus: all
+
+    # Shared memory
+    shm_size: "2gb"
+
+    # Memory and stack limits
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      stack:
+        soft: 67108864
+        hard: 67108864
+
+    environment:
+      # Ollama configuration
+      OLLAMA_HOST: 0.0.0.0:11434
+
+      # Model concurrency
+      OLLAMA_NUM_PARALLEL: 2
+      OLLAMA_MAX_LOADED_MODELS: 1
+
+      # Keep models loaded for faster responses
+      OLLAMA_KEEP_ALIVE: 10m
+
+      # Optional: reduce excessive model loading
+      OLLAMA_MAX_QUEUE: 128
+
     volumes:
       - ./ollama_storage:/root/.ollama
+
+    # Internal API port; not exposed to the host
+    expose:
+      - "11434"
+
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - "OLLAMA_HOST=http://127.0.0.1:11434 ollama list >/dev/null 2>&1"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
     deploy:
       resources:
         reservations:
@@ -20,20 +66,64 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    restart: unless-stopped
 
-  # The Python Chat UI Frontend
+    networks:
+      - ai-network
+
+
+  # ==========================================
+  # PYTHON CHAT UI FRONTEND
+  # ==========================================
   chat-ui:
     build:
       context: .
-      dockerfile: dockerfile.chat-ui  # FIX: Kept consistent with standard capitalized naming
+      dockerfile: dockerfile.chat-ui
+
     container_name: python_chat_ui
+
+    restart: unless-stopped
+
     ports:
       - "8080:8080"
+
     environment:
-      - OLLAMA_HOST=http://ollama-backend:11434
+      OLLAMA_HOST: http://ollama-backend:11434
+
+      # Python application configuration
+      PYTHONUNBUFFERED: "1"
+
     depends_on:
-      - ollama-backend
+      ollama-backend:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    networks:
+      - ai-network
+
+
+# ==========================================
+# NETWORK CONFIGURATION
+# ==========================================
+networks:
+  ai-network:
+    driver: bridge
+
+
+# ==========================================
+# PERSISTENT STORAGE
+# ==========================================
+volumes:
+  ollama-data:
 
 
 # 1. Build the images without using old cache layers
@@ -45,3 +135,13 @@ services:
 # 3. Automatically pull the llama3.1 model into your GPU server volume
 # docker exec -it ollama_gpu ollama pull llama3.1
 # docker exec -it ollama_gpu ollama pull qwen2.5-coder:1.5b
+# docker exec -it ollama_gpu ollama pull deepseek-coder:1.3b
+# docker exec -it ollama_gpu ollama pull qwen2.5-coder:3b
+# docker exec -it ollama_gpu ollama pull qwen2.5-coder:7b-instruct-q3_K_M
+# docker exec -it ollama_gpu ollama pull deepseek-coder:6.7b-instruct-q3_K_M
+
+# Check NVIDIA Docker Visibility
+# docker exec -it ollama_gpu nvidia-smi
+
+# Run a Real-Time Performance Benchmark
+# docker exec -it ollama_gpu ollama run qwen2.5-coder:1.5b "Write a quick Python script to calculate Fibonacci sequence, then output performance metrics." --verbose
