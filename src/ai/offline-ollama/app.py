@@ -1,102 +1,211 @@
+
 import os
 import gradio as gr
 import ollama
 
-# Pull the backend host address from the docker-compose environment variables
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama-backend:11434")
+# ==========================================
+# OLLAMA CONFIGURATION
+# ==========================================
 
-# Initialize the Ollama Client
-client = ollama.Client(host=OLLAMA_HOST)
+OLLAMA_HOST = os.getenv(
+    "OLLAMA_HOST",
+    "http://ollama-backend:11434"
+)
+
+# Maximum simultaneous chat generations
+MAX_CONCURRENT_CHATS = 4
+
+
+def get_ollama_client():
+    """Create an independent client for each request."""
+    return ollama.Client(host=OLLAMA_HOST)
+
+
+# ==========================================
+# MODEL MANAGEMENT
+# ==========================================
 
 def get_installed_models():
-    """Fetch the list of downloaded models from the Ollama backend container."""
     try:
+        client = get_ollama_client()
         model_list_data = client.list()
-        models = [m['model'] for m in model_list_data.get('models', [])]
+
+        models = [
+            m["model"]
+            for m in model_list_data.get("models", [])
+        ]
+
         return models if models else []
-    except Exception:
-        # Avoid blocking UI startup if backend container is booting up
+
+    except Exception as e:
+        print(f"Model loading error: {e}")
         return []
 
+
 def refresh_models_on_load():
-    """Triggered after the UI loads to dynamically populate the dropdown.
-    If no models are installed, choices remain empty and nothing is selected."""
     models = get_installed_models()
+
     if models:
-        # Populates the choices and automatically selects the first real available model
         return gr.update(choices=models, value=None)
-    else:
-        # Strips out placeholder options entirely so nothing is selected
-        return gr.update(choices=[], value=None)
+
+    return gr.update(choices=[], value=None)
+
+
+# ==========================================
+# MESSAGE PROCESSING
+# ==========================================
 
 def extract_content(content):
-    """Helper function to cleanly extract text from complex multi-modal Gradio message structures."""
+
     if isinstance(content, str):
         return content
+
     if isinstance(content, list):
         text_pieces = []
+
         for block in content:
             if isinstance(block, dict):
                 if block.get("type") == "text":
-                    text_pieces.append(block.get("text", ""))
+                    text_pieces.append(
+                        block.get("text", "")
+                    )
+
         return "".join(text_pieces)
+
     return str(content)
 
+
 def read_text_file(filepath):
-    """Safely open and read the contents of a dropped text file."""
+
     try:
-        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        with open(
+            filepath,
+            "r",
+            encoding="utf-8",
+            errors="ignore"
+        ) as f:
             return f.read()
+
     except Exception as e:
         return f"\n[Error reading file: {str(e)}]\n"
 
+
+# ==========================================
+# CONCURRENT CHAT GENERATION
+# ==========================================
+
 def predict(message, history, model_name):
+
     if not model_name:
-        yield "⚠️ Please select a model from the sidebar controls before sending a prompt."
+        yield "⚠️ Please select a model from the sidebar controls."
         return
 
+    # Build independent conversation history
     messages = []
-    for msg in history:
-        if isinstance(msg, dict):
-            role = msg.get('role')
-            content_data = msg.get('content')
-            messages.append({'role': role, 'content': extract_content(content_data)})
-        elif isinstance(msg, (list, tuple)) and len(msg) == 2:
-            user_msg, ai_msg = msg
-            if user_msg:
-                messages.append({'role': 'user', 'content': extract_content(user_msg)})
-            if ai_msg:
-                messages.append({'role': 'assistant', 'content': extract_content(ai_msg)})
 
+    for msg in history:
+
+        if isinstance(msg, dict):
+
+            role = msg.get("role")
+            content_data = msg.get("content")
+
+            if role in ("user", "assistant"):
+                messages.append({
+                    "role": role,
+                    "content": extract_content(content_data)
+                })
+
+        elif isinstance(msg, (list, tuple)) and len(msg) == 2:
+
+            user_msg, ai_msg = msg
+
+            if user_msg:
+                messages.append({
+                    "role": "user",
+                    "content": extract_content(user_msg)
+                })
+
+            if ai_msg:
+                messages.append({
+                    "role": "assistant",
+                    "content": extract_content(ai_msg)
+                })
+
+    # Process current message and uploaded files
     current_text = ""
     file_contents = ""
+
     if isinstance(message, dict):
+
         current_text = message.get("text", "")
         files = message.get("files", [])
+
         for f in files:
-            file_path = f.get("path") if isinstance(f, dict) else f
+
+            file_path = (
+                f.get("path")
+                if isinstance(f, dict)
+                else f
+            )
+
             if file_path:
+
                 filename = os.path.basename(file_path)
                 raw_text = read_text_file(file_path)
-                file_contents += f"\n\n--- Contents of uploaded file: {filename} ---\n{raw_text}\n-------------------------------------------\n"
+
+                file_contents += (
+                    f"\n\n--- Contents of uploaded file: "
+                    f"{filename} ---\n"
+                    f"{raw_text}\n"
+                    f"-------------------------------------------\n"
+                )
+
     else:
         current_text = extract_content(message)
 
-    final_prompt = current_text
-    if file_contents:
-        final_prompt += file_contents
-        
-    messages.append({'role': 'user', 'content': final_prompt})
-    
+    final_prompt = current_text + file_contents
+
+    messages.append({
+        "role": "user",
+        "content": final_prompt
+    })
+
+    # Create an independent Ollama client per generation
+    client = get_ollama_client()
+
     try:
-        response = client.chat(model=model_name, messages=messages, stream=True)
+
+        response = client.chat(
+            model=model_name,
+            messages=messages,
+            stream=True
+        )
+
         partial_message = ""
+
         for chunk in response:
-            if 'message' in chunk and 'content' in chunk['message']:
-                partial_message += chunk['message']['content']
+
+            if (
+                "message" in chunk
+                and "content" in chunk["message"]
+            ):
+
+                partial_message += chunk["message"]["content"]
+
                 yield partial_message
+
     except Exception as e:
-        yield f"Error running execution on '{model_name}': {str(e)}"
+
+        yield (
+            f"Error running execution on "
+            f"'{model_name}': {str(e)}"
+        )
+
+
+# ==========================================
+# UI STYLING
+# ==========================================
 
 head_style = """
 <style>
@@ -107,6 +216,7 @@ head_style = """
         margin: 0 !important;
         padding: 0 !important;
     }
+
     .contain {
         display: flex !important;
         flex-direction: column !important;
@@ -115,30 +225,62 @@ head_style = """
 </style>
 """
 
-# FIX 1: Removed head=head_style from gr.Blocks constructor
-with gr.Blocks(title="ChatGABO", fill_width=True, fill_height=True) as demo:
-    
+
+# ==========================================
+# GRADIO APPLICATION
+# ==========================================
+
+with gr.Blocks(
+    title="ChatGABO",
+    fill_width=True,
+    fill_height=True
+) as demo:
+
     with gr.Sidebar(label="Controls", open=True):
+
         gr.Markdown("# 🦙 ChatGABO")
+
         model_dropdown = gr.Dropdown(
-            choices=[], 
-            value=None, 
+            choices=[],
+            value=None,
             label="Select Active Model",
             info="Drop text files (.txt, .md, .py, .csv) directly into the chat prompt area.",
             interactive=True
         )
-        
-    # FIX 2: Removed files=[...] argument. setting multimodal=True handles this natively.
+
     chat = gr.ChatInterface(
         fn=predict,
         additional_inputs=[model_dropdown],
         fill_width=True,
         fill_height=True,
-        multimodal=True
+        multimodal=True,
+
+        # Allow independent simultaneous generations
+        concurrency_limit=MAX_CONCURRENT_CHATS
     )
-    
-    demo.load(fn=refresh_models_on_load, inputs=None, outputs=[model_dropdown])
+
+    demo.load(
+        fn=refresh_models_on_load,
+        inputs=None,
+        outputs=[model_dropdown]
+    )
+
+
+# ==========================================
+# START APPLICATION
+# ==========================================
 
 if __name__ == "__main__":
-    # FIX 1 (cont.): Moved head=head_style to the launch configuration
-    demo.launch(server_name="0.0.0.0", server_port=8080, share=False, head=head_style)
+
+    # Explicitly configure the Gradio request queue
+    demo.queue(
+        default_concurrency_limit=MAX_CONCURRENT_CHATS
+    )
+
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=8080,
+        share=False,
+        head=head_style,
+        max_threads=40
+    )

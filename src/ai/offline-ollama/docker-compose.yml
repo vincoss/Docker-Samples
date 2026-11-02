@@ -31,12 +31,14 @@ services:
       # Ollama configuration
       OLLAMA_HOST: 0.0.0.0:11434
 
-      # Model concurrency
+      # Enable concurrent inference
       OLLAMA_NUM_PARALLEL: 32
+
+      # Keep one model loaded in GPU memory
       OLLAMA_MAX_LOADED_MODELS: 1
 
-      # Keep models loaded for faster responses
-      OLLAMA_KEEP_ALIVE: 10m
+      # Keep model loaded between requests, Indefinitely
+      OLLAMA_KEEP_ALIVE: -1
 
       # Optional: reduce excessive model loading
       OLLAMA_MAX_QUEUE: 128

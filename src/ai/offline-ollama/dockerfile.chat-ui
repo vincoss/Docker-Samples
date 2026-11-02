@@ -2,17 +2,25 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies cleanly
-RUN pip install --no-cache-dir gradio ollama
+# Prevent Python output buffering
+ENV PYTHONUNBUFFERED=1
 
+# Ollama backend address
+ENV OLLAMA_HOST=http://ollama-backend:11434
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    "gradio>=5.0,<7.0" \
+    "ollama>=0.4.0"
+
+# Copy application
 COPY app.py /app/app.py
 
 EXPOSE 8080
 
-# Default fallback environment variable
-ENV OLLAMA_HOST=http://localhost:11434
-
-CMD ["python", "app.py"]
+# Start ChatGABO
+CMD ["python", "-u", "app.py"]
 
 
 # --- MANUAL TERMINAL COMMANDS (FOR STANDALONE RUNNING WITHOUT COMPOSE) ---
