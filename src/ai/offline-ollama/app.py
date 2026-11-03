@@ -8,7 +8,7 @@ import ollama
 
 
 # ============================================================
-# APPLICATION CONFIGURATION
+# CONFIGURATION
 # ============================================================
 
 APP_TITLE = "ChatGABO"
@@ -18,13 +18,11 @@ OLLAMA_HOST = os.getenv(
     "http://ollama-backend:11434"
 )
 
-MAX_CONCURRENT_CHATS = int(
-    os.getenv("MAX_CONCURRENT_CHATS", "4")
-)
+OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "300"))
+MAX_CONCURRENT_CHATS = int(os.getenv("MAX_CONCURRENT_CHATS", "4"))
 
-OLLAMA_TIMEOUT = float(
-    os.getenv("OLLAMA_TIMEOUT", "300")
-)
+if OLLAMA_TIMEOUT <= 0 or MAX_CONCURRENT_CHATS < 1:
+    raise ValueError("Invalid application configuration.")
 
 MAX_UPLOAD_FILES = 5
 MAX_TEXT_FILE_SIZE = 5 * 1024 * 1024
@@ -33,10 +31,9 @@ MAX_EXTRACTED_TEXT = 50000
 MAX_HISTORY_MESSAGES = 40
 
 TEXT_EXTENSIONS = {
-    ".txt", ".md", ".py", ".csv",
-    ".json", ".yaml", ".yml", ".log",
-    ".xml", ".html", ".css", ".js",
-    ".sql", ".sh", ".ini", ".toml"
+    ".txt", ".md", ".py", ".csv", ".json",
+    ".yaml", ".yml", ".log", ".xml", ".html",
+    ".css", ".js", ".sql", ".sh", ".ini", ".toml"
 }
 
 IMAGE_EXTENSIONS = {
@@ -50,128 +47,74 @@ logging.basicConfig(
 
 logger = logging.getLogger("ChatGABO")
 
-
-# ============================================================
-# OLLAMA CLIENT
-# ============================================================
-
-def get_ollama_client():
-    return ollama.Client(
-        host=OLLAMA_HOST,
-        timeout=OLLAMA_TIMEOUT
-    )
+client = ollama.Client(
+    host=OLLAMA_HOST,
+    timeout=OLLAMA_TIMEOUT
+)
 
 
 # ============================================================
 # MODEL MANAGEMENT
 # ============================================================
 
-def get_installed_models():
-
+def get_models():
     try:
-        client = get_ollama_client()
-        result = client.list()
-
-        models = []
-
-        # Current Ollama SDK response format
-        model_objects = getattr(result, "models", None)
-
-        if model_objects is not None:
-
-            for model in model_objects:
-
-                name = getattr(model, "model", None)
-
-                if name:
-                    models.append(name)
-
-        # Backwards compatibility
-        elif isinstance(result, dict):
-
-            for model in result.get("models", []):
-
-                if isinstance(model, dict):
-                    name = model.get("model") or model.get("name")
-                else:
-                    name = getattr(model, "model", None)
-
-                if name:
-                    models.append(name)
-
-        return sorted(set(models))
+        return sorted({
+            model.model
+            for model in client.list().models
+            if model.model
+        })
 
     except Exception:
-
         logger.exception("Unable to retrieve Ollama models")
-
         return []
 
 
 def refresh_models():
+    models = get_models()
 
-    models = get_installed_models()
-
-    if models:
-
-       return (
-            gr.update(
-                choices=models,
-                value=None
-            ),
-            f"Loaded {len(models)} installed model(s). Please select a model."
+    if not models:
+        return (
+            gr.update(choices=[], value=None),
+            "No models found. Check the Ollama backend."
         )
 
     return (
-        gr.update(
-            choices=[],
-            value=None
-        ),
-        "No models found. Check the Ollama backend."
+        gr.update(choices=models, value=None),
+        f"Loaded {len(models)} model(s). Select a model."
     )
 
 
 # ============================================================
-# MESSAGE HISTORY
+# HISTORY MANAGEMENT
 # ============================================================
 
-def extract_content(content):
-
-    if content is None:
-        return ""
-
+def extract_text(content):
     if isinstance(content, str):
         return content
 
-    if isinstance(content, list):
+    if not isinstance(content, list):
+        return ""
 
-        pieces = []
+    parts = []
 
-        for block in content:
+    for block in content:
+        if isinstance(block, str):
+            parts.append(block)
 
-            if isinstance(block, dict):
+        elif isinstance(block, dict) and block.get("type") == "text":
+            parts.append(block.get("text", ""))
 
-                if block.get("type") == "text":
-                    pieces.append(block.get("text", ""))
+        elif getattr(block, "type", None) == "text":
+            parts.append(getattr(block, "text", ""))
 
-            else:
-
-                text = getattr(block, "text", None)
-
-                if text:
-                    pieces.append(text)
-
-        return "".join(pieces)
-
-    return str(content)
+    return "".join(parts)
 
 
 def prepare_history(history):
-
     messages = []
 
-    for item in (history or []):
-
+    for item in (history or [])[-MAX_HISTORY_MESSAGES:]:
         if not isinstance(item, dict):
             continue
 
@@ -180,118 +123,92 @@ def prepare_history(history):
         if role not in ("user", "assistant"):
             continue
 
-        content = extract_content(item.get("content"))
+        content = item.get("content", "")
+        text = extract_text(content)
 
-        if not content:
-            continue
+        if text:
+            messages.append({
+                "role": role,
+                "content": text
+            })
 
-        messages.append({
-            "role": role,
-            "content": content
-        })
-
-    # Keep the most recent conversation messages
-    return messages[-MAX_HISTORY_MESSAGES:]
+    return messages
 
 
 # ============================================================
 # FILE PROCESSING
 # ============================================================
 
-def get_file_path(file_item):
+def get_file_path(item):
+    if isinstance(item, str):
+        return item
 
-    if isinstance(file_item, str):
-        return file_item
+    if isinstance(item, dict):
+        return item.get("path") or item.get("name")
 
-    if isinstance(file_item, dict):
-        return file_item.get("path") or file_item.get("name")
-
-    return getattr(file_item, "path", None)
+    return getattr(item, "path", None)
 
 
-def process_uploaded_files(files):
-
+def process_files(files):
     text_contents = []
     image_paths = []
     warnings = []
 
-    if not files:
-        return "", [], []
+    total_chars = 0
 
     if len(files) > MAX_UPLOAD_FILES:
-
         warnings.append(
-            f"Maximum {MAX_UPLOAD_FILES} files allowed per message."
+            f"Only the first {MAX_UPLOAD_FILES} files are allowed."
         )
 
-        files = files[:MAX_UPLOAD_FILES]
-
-    total_text_length = 0
-
-    for file_item in files:
-
-        file_path = get_file_path(file_item)
-
-        if not file_path:
-            continue
-
-        path = Path(file_path)
+    for item in (files or [])[:MAX_UPLOAD_FILES]:
+        filename = "unknown"
 
         try:
+            file_path = get_file_path(item)
+
+            if not file_path:
+                warnings.append("Invalid uploaded file.")
+                continue
+
+            path = Path(file_path)
+            filename = path.name
 
             if not path.is_file():
-                warnings.append("An uploaded file could not be accessed.")
+                warnings.append(f"{filename}: file not accessible.")
                 continue
 
             extension = path.suffix.lower()
-            filename = path.name
             size = path.stat().st_size
 
-            # ----------------------------------------
-            # IMAGE PROCESSING
-            # ----------------------------------------
-
+            # Images
             if extension in IMAGE_EXTENSIONS:
-
                 if size > MAX_IMAGE_FILE_SIZE:
-
                     warnings.append(
-                        f"{filename}: image exceeds 10MB limit."
+                        f"{filename}: image exceeds 10MB."
                     )
+                else:
+                    image_paths.append(str(path.resolve()))
 
-                    continue
-
-                image_paths.append(str(path.resolve()))
                 continue
 
-            # ----------------------------------------
-            # TEXT FILE PROCESSING
-            # ----------------------------------------
-
+            # Text files
             if extension not in TEXT_EXTENSIONS:
-
                 warnings.append(
                     f"{filename}: unsupported file type."
                 )
-
                 continue
 
             if size > MAX_TEXT_FILE_SIZE:
-
                 warnings.append(
-                    f"{filename}: file exceeds 5MB limit."
+                    f"{filename}: file exceeds 5MB."
                 )
-
                 continue
 
-            remaining = MAX_EXTRACTED_TEXT - total_text_length
+            remaining = MAX_EXTRACTED_TEXT - total_chars
 
             if remaining <= 0:
-
-                warnings.append(
-                    "Maximum extracted text limit reached."
-                )
-
+                warnings.append("Maximum extracted text reached.")
                 break
 
             with path.open(
@@ -299,42 +216,30 @@ def process_uploaded_files(files):
                 encoding="utf-8",
                 errors="replace"
             ) as file:
-
                 content = file.read(remaining + 1)
 
             if len(content) > remaining:
-
                 content = content[:remaining]
+                warnings.append("Uploaded text was truncated.")
 
-                warnings.append(
-                    "Some uploaded text was truncated."
-                )
-
-            total_text_length += len(content)
+            total_chars += len(content)
 
             text_contents.append(
-                f"\n\n"
-                f"===== FILE: {filename} =====\n"
+                f"\n\n--- FILE: {filename} ---\n"
                 f"{content}\n"
-                f"===== END FILE =====\n"
+                f"--- END FILE ---"
             )
 
         except Exception:
-
             logger.exception(
-                "File processing failed: %s",
-                filename if "filename" in locals() else "unknown"
+                "Failed to process file: %s",
+                filename
             )
-
             warnings.append(
-                "An uploaded file could not be processed."
+                f"{filename}: unable to process file."
             )
 
-    return (
-        "".join(text_contents),
-        image_paths,
-        warnings
-    )
+    return "\n".join(text_contents), image_paths, warnings
 
 
 # ============================================================
@@ -343,77 +248,49 @@ def process_uploaded_files(files):
 
 def predict(message, history, model_name):
 
-    # ----------------------------------------
-    # MODEL VALIDATION
-    # ----------------------------------------
-
+    # Validate model
     if not model_name:
-
         yield "Please select an Ollama model first."
         return
 
-    # ----------------------------------------
-    # MESSAGE EXTRACTION
-    # ----------------------------------------
-
+    # Read message
     if isinstance(message, dict):
-
-        current_text = message.get("text", "") or ""
-        uploaded_files = message.get("files", []) or []
-
+        user_text = extract_text(message.get("text") or "")
+        files = message.get("files") or []
     else:
+        user_text = extract_text(message)
+        files = []
 
-        current_text = extract_content(message)
-        uploaded_files = []
+    # Process uploads
+    file_text, images, warnings = process_files(files)
 
-    # ----------------------------------------
-    # FILE PROCESSING
-    # ----------------------------------------
+    prompt = user_text + file_text
 
-    file_text, image_paths, warnings = (
-        process_uploaded_files(uploaded_files)
-    )
-
-    final_prompt = current_text + file_text
-
-    if not final_prompt.strip() and not image_paths:
-
+    if not prompt.strip() and not images:
         yield "Please enter a message or upload a supported file."
         return
 
-    # ----------------------------------------
-    # BUILD CONVERSATION
-    # ----------------------------------------
-
+    # Prepare conversation
     messages = prepare_history(history)
 
     user_message = {
         "role": "user",
-        "content": final_prompt
+        "content": prompt
     }
 
-    # Ollama vision support
-    if image_paths:
-        user_message["images"] = image_paths
+    if images:
+        user_message["images"] = images
 
     messages.append(user_message)
 
-    # ----------------------------------------
-    # GENERATION OPTIONS
-    # ----------------------------------------
+    # Warning messages
+    warning_text = "\n".join(
+        f"⚠️ {warning}" for warning in warnings
+    )
 
-    options = {
-        "temperature": 0.7,
-        "num_ctx": 8192,
-        "num_predict": 2048
-    }
-
-    client = get_ollama_client()
-
-    partial_message = ""
+    response_text = ""
 
     try:
-
         logger.info(
             "Starting generation | model=%s",
             model_name
@@ -423,85 +300,61 @@ def predict(message, history, model_name):
             model=model_name,
             messages=messages,
             stream=True,
-            options=options
+            options={
+                "temperature": 0.7,
+                "num_ctx": 8192,
+                "num_predict": 2048
+            }
         )
 
-        # Display file warnings
-        if warnings:
-
-            warning_text = "\n".join(
-                f"⚠️ {warning}" for warning in warnings
-            )
-
-            yield warning_text + "\n\nGenerating response...\n"
-
-        # ------------------------------------
-        # STREAM RESPONSE
-        # ------------------------------------
-
+        # Stream response
         for chunk in response:
-
-            chunk_message = getattr(
-                chunk,
-                "message",
-                None
-            )
-
-            if chunk_message is not None:
-
-                content = getattr(
-                    chunk_message,
-                    "content",
-                    ""
-                )
-
-            elif isinstance(chunk, dict):
-
-                content = chunk.get(
-                    "message", {}
-                ).get("content", "")
-
-            else:
-
-                content = ""
+            content = getattr(
+                getattr(chunk, "message", None),
+                "content",
+                ""
+            ) or ""
 
             if content:
+                response_text += content
 
-                partial_message += content
+                yield (
+                    warning_text + "\n\n" + response_text
+                    if warning_text
+                    else response_text
+                )
 
-                yield partial_message
-
-        if not partial_message:
-
-            yield "The model returned an empty response."
+        if not response_text:
+            yield (
+                warning_text + "\n\n"
+                "The model returned an empty response."
+            )
 
         logger.info(
             "Generation completed | model=%s | characters=%s",
             model_name,
-            len(partial_message)
+            len(response_text)
         )
 
-    except Exception as error:
-
+    except Exception:
         logger.exception(
             "Ollama generation failed | model=%s",
             model_name
         )
 
         yield (
-            f"⚠️ Unable to generate a response using "
-            f"'{model_name}'.\n\n"
-            f"Check the Ollama server logs and model availability."
+            warning_text + "\n\n"
+            "Unable to generate a response. "
+            "Check the Ollama backend and model availability."
         )
 
 
 # ============================================================
-# USER INTERFACE STYLING
+# UI STYLING
 # ============================================================
 
 HEAD_STYLE = """
 <style>
-
 html, body, .gradio-container {
     width: 100% !important;
     min-height: 100vh !important;
@@ -515,7 +368,6 @@ html, body, .gradio-container {
 footer {
     display: none !important;
 }
-
 </style>
 """
 
@@ -527,27 +379,23 @@ footer {
 with gr.Blocks(
     title=APP_TITLE,
     fill_width=True,
-    fill_height=True
+    fill_height=True,
+    theme=gr.themes.Soft()
 ) as demo:
 
-    # ----------------------------------------
-    # SIDEBAR
-    # ----------------------------------------
-
+    # Sidebar
     with gr.Sidebar(
         label="ChatGABO Controls",
         open=True
     ):
 
-        gr.Markdown(
-            """
-            # 🦙 ChatGABO
+        gr.Markdown("""
+        # 🦙 ChatGABO
 
-            ### Local AI Assistant
+        ### Local AI Assistant
 
-            Powered by Ollama + NVIDIA GPU
-            """
-        )
+        Powered by Ollama + NVIDIA GPU
+        """)
 
         model_dropdown = gr.Dropdown(
             choices=[],
@@ -565,39 +413,28 @@ with gr.Blocks(
             "Loading available models..."
         )
 
-        gr.Markdown("---")
+        gr.Markdown("""
+        ---
 
-        gr.Markdown(
-            """
-            ### Supported uploads
+        ### Supported uploads
 
-            - Text and source-code files
-            - CSV, JSON and YAML
-            - PNG, JPG and WebP images
+        - Text and source-code files
+        - CSV, JSON and YAML
+        - PNG, JPG and WebP images
 
-            Image understanding requires a vision-capable model.
-            """
-        )
+        Image understanding requires a vision-capable model.
+        """)
 
-    # ----------------------------------------
-    # MAIN CHAT
-    # ----------------------------------------
-
-    chat = gr.ChatInterface(
+    # Main chat
+    gr.ChatInterface(
         fn=predict,
-
-        additional_inputs=[
-            model_dropdown
-        ],
-
+        additional_inputs=[model_dropdown],
         multimodal=True,
-
         fill_width=True,
         fill_height=True,
-
         concurrency_limit=MAX_CONCURRENT_CHATS,
 
-       chatbot=gr.Chatbot(
+        chatbot=gr.Chatbot(
             height="100%",
             layout="bubble"
         ),
@@ -605,44 +442,28 @@ with gr.Blocks(
         textbox=gr.MultimodalTextbox(
             placeholder="Message ChatGABO...",
             file_count="multiple",
-            file_types=[
-                ".txt", ".md", ".py", ".csv",
-                ".json", ".yaml", ".yml", ".log",
-                ".xml", ".html", ".css", ".js",
-                ".sql", ".sh", ".ini", ".toml",
-                ".png", ".jpg", ".jpeg",
-                ".webp", ".bmp"
-            ],
+            file_types=list(TEXT_EXTENSIONS | IMAGE_EXTENSIONS),
             sources=["upload"]
         )
     )
 
-    # ----------------------------------------
-    # MODEL REFRESH
-    # ----------------------------------------
-
+    # Refresh models
     refresh_button.click(
         fn=refresh_models,
         inputs=None,
-        outputs=[
-            model_dropdown,
-            model_status
-        ]
+        outputs=[model_dropdown, model_status]
     )
 
     # Initial model discovery
     demo.load(
         fn=refresh_models,
         inputs=None,
-        outputs=[
-            model_dropdown,
-            model_status
-        ]
+        outputs=[model_dropdown, model_status]
     )
 
 
 # ============================================================
-# APPLICATION STARTUP
+# START APPLICATION
 # ============================================================
 
 if __name__ == "__main__":
@@ -652,10 +473,9 @@ if __name__ == "__main__":
     )
 
     demo.launch(
-    server_name="0.0.0.0",
-    server_port=8080,
-    share=False,
-    head=HEAD_STYLE,
-    max_threads=40,
-    theme=gr.themes.Soft()
-)
+        server_name="0.0.0.0",
+        server_port=8080,
+        share=False,
+        head=HEAD_STYLE,
+        max_threads=40
+    )
