@@ -33,11 +33,8 @@ MAX_HISTORY_MESSAGES = 40
 TEXT_EXTENSIONS = {
     ".txt", ".md", ".py", ".csv", ".json",
     ".yaml", ".yml", ".log", ".xml", ".html",
-    ".css", ".js", ".sql", ".sh", ".ini", ".toml"
-}
-
-IMAGE_EXTENSIONS = {
-    ".png", ".jpg", ".jpeg", ".webp", ".bmp"
+    ".css", ".js", ".sql", ".sh", ".ini", ".toml",
+    ".svg"
 }
 
 logging.basicConfig(
@@ -151,7 +148,6 @@ def get_file_path(item):
 
 def process_files(files):
     text_contents = []
-    image_paths = []
     warnings = []
 
     total_chars = 0
@@ -180,17 +176,6 @@ def process_files(files):
 
             extension = path.suffix.lower()
             size = path.stat().st_size
-
-            # Images
-            if extension in IMAGE_EXTENSIONS:
-                if size > MAX_IMAGE_FILE_SIZE:
-                    warnings.append(
-                        f"{filename}: image exceeds 10MB."
-                    )
-                else:
-                    image_paths.append(str(path.resolve()))
-
-                continue
 
             # Text files
             if extension not in TEXT_EXTENSIONS:
@@ -239,7 +224,7 @@ def process_files(files):
                 f"{filename}: unable to process file."
             )
 
-    return "\n".join(text_contents), image_paths, warnings
+    return "\n".join(text_contents), warnings
 
 
 # ============================================================
@@ -262,11 +247,11 @@ def predict(message, history, model_name):
         files = []
 
     # Process uploads
-    file_text, images, warnings = process_files(files)
+    file_text, warnings = process_files(files)
 
     prompt = user_text + file_text
 
-    if not prompt.strip() and not images:
+    if not prompt.strip():
         yield "Please enter a message or upload a supported file."
         return
 
@@ -277,9 +262,6 @@ def predict(message, history, model_name):
         "role": "user",
         "content": prompt
     }
-
-    if images:
-        user_message["images"] = images
 
     messages.append(user_message)
 
@@ -394,7 +376,6 @@ with gr.Blocks(
 
         ### Local AI Assistant
 
-        Powered by Ollama + NVIDIA GPU
         """)
 
         model_dropdown = gr.Dropdown(
@@ -420,9 +401,7 @@ with gr.Blocks(
 
         - Text and source-code files
         - CSV, JSON and YAML
-        - PNG, JPG and WebP images
 
-        Image understanding requires a vision-capable model.
         """)
 
     # Main chat
@@ -442,7 +421,7 @@ with gr.Blocks(
         textbox=gr.MultimodalTextbox(
             placeholder="Message ChatGABO...",
             file_count="multiple",
-            file_types=list(TEXT_EXTENSIONS | IMAGE_EXTENSIONS),
+            file_types=list(TEXT_EXTENSIONS),
             sources=["upload"]
         )
     )
