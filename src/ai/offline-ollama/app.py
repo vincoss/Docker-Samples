@@ -335,23 +335,75 @@ def predict(message, history, model_name):
 # UI STYLING
 # ============================================================
 
+
+
 HEAD_STYLE = """
 <style>
-html, body, .gradio-container {
+html, body {
     width: 100% !important;
-    min-height: 100vh !important;
+    height: 100% !important;
     margin: 0 !important;
+    overflow: hidden !important;
 }
 
 .gradio-container {
+    width: 100% !important;
     max-width: 100% !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
 }
 
 footer {
     display: none !important;
 }
+
+/* Main application */
+.gradio-container > .main {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* ChatInterface container */
+.gradio-container .chatbot {
+    min-height: 0 !important;
+}
+
+/* Chat message scrolling */
+.gradio-container .bubble-wrap {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Keep the chat input visible */
+.gradio-container .input-container {
+    flex: 0 0 auto !important;
+    position: relative !important;
+    z-index: 10 !important;
+    background: var(--background-fill-primary) !important;
+    padding: 10px !important;
+}
+
+/* Prevent chat layout from expanding */
+.gradio-container .wrap {
+    min-height: 0 !important;
+}
+
+/* Smooth scrolling */
+.gradio-container .bubble-wrap {
+    scroll-behavior: smooth;
+}
+
+/* Hide footer */
+footer {
+    display: none !important;
+}
 </style>
 """
+
 
 
 # ============================================================
@@ -373,9 +425,6 @@ with gr.Blocks(
 
         gr.Markdown("""
         # 🦙 ChatGABO
-
-        ### Local AI Assistant
-
         """)
 
         model_dropdown = gr.Dropdown(
@@ -396,12 +445,9 @@ with gr.Blocks(
 
         gr.Markdown("""
         ---
-
         ### Supported uploads
-
         - Text and source-code files
         - CSV, JSON and YAML
-
         """)
 
     # Main chat

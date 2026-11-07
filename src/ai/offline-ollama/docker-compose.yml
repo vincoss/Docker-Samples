@@ -43,7 +43,7 @@ services:
       OLLAMA_KEEP_ALIVE: "-1"
 
       # Request queue
-      OLLAMA_MAX_QUEUE: "32"
+      OLLAMA_MAX_QUEUE: "8"
 
       # GPU memory optimization
       OLLAMA_FLASH_ATTENTION: "1"
@@ -63,7 +63,7 @@ services:
         - "OLLAMA_HOST=http://127.0.0.1:11434 ollama list >/dev/null 2>&1"
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 60s
 
     deploy:
@@ -110,9 +110,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - python
+        - /bin/sh
         - -c
-        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/', timeout=5)"
+        - "curl -f -s -I http://127.0.0.1:8080/ >/dev/null 2>&1"
       interval: 30s
       timeout: 10s
       retries: 3

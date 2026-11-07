@@ -16,10 +16,8 @@ EXPOSE 8080
 
 CMD ["python", "-u", "app.py"]
 
-
-# --- MANUAL TERMINAL COMMANDS (FOR STANDALONE RUNNING WITHOUT COMPOSE) ---
 # Build command:
 # docker build -f dockerfile.chat-ui --no-cache -t python_chat_ui .
-#
-# Run command (FIXED: Uses the explicit '-e' flag for setting environment variables):
+
+# Run command
 # docker run -it -p 8080:8080 -e OLLAMA_HOST=http://ollama-backend:11434 python_chat_ui
