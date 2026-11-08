@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+WORKDIR /download
+
+# Install the huggingface hub utility cleanly
+RUN pip install --no-cache-dir "huggingface_hub[cli]"
+
+# Default environment variables that you can override at runtime
+ENV MODEL_NAME=""
+
+# FIX: Calling the module directly via python -m ensures it is ALWAYS found
+CMD sh -c "if [ -z \"\$MODEL_NAME\" ]; then echo '❌ Error: MODEL_NAME environment variable is not set!'; exit 1; fi; \
+    echo '🚀 Starting download for: '\$MODEL_NAME && \
+    hf_name=\$(echo \$MODEL_NAME | awk -F/ '{print \$NF}') && \
+    python -m huggingface_hub.cli.huggingface_cli download \$MODEL_NAME --local-dir /download/\$hf_name"
+
+
+
+# Build command:
+# docker build -f dockerfile.vllm.downloader --no-cache -t dockerfile_vllm_downloader .
+
+# Run and download model
+#docker run --rm `
+#  -v "${PWD}/my_models:/download" `
+#  -e MODEL_NAME="Qwen/Qwen2.5-Coder-1.5B-Instruct" `
+#  dockerfile_vllm_downloader
