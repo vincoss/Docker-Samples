@@ -1,4 +1,6 @@
 
+name: gpu_model_server_ollama
+
 services:
   # ==========================================
   # GPU MODEL SERVER - OLLAMA

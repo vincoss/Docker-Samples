@@ -9,12 +9,16 @@ services:
       context: .
       dockerfile: dockerfile.vllm
 
-    container_name: vllm_gpu
+    container_name: vllm_gpu  # remove for production beter scalling
     
     restart: unless-stopped
+    init: true
 
     # Shared memory
-    shm_size: "2gb"
+    #shm_size: "16gb"
+
+    # Use host ram instead of 'shm_size: "16gb"'
+    ipc: host
 
     # Memory and stack limits
     ulimits:
@@ -26,10 +30,11 @@ services:
         hard: 67108864
 
     environment:
-      - HF_HUB_OFFLINE=${HF_HUB_OFFLINE}
+      - HF_HUB_OFFLINE=${HF_HUB_OFFLINE}  # Do not attempt to connect to the internet.
+      - HF_HUB_DISABLE_TELEMETRY=1  # Disable its telemetry reporting
 
     volumes:
-      # Maps the "./my_models" folder on your host machine to "/models" inside the container
+      # Maps the "./my_models" folder on your host machine to "/models" inside the container. ro:readonly
       - ./my_models:/models:ro
 
     # Internal API port; not exposed to the host
@@ -37,12 +42,12 @@ services:
       - "8000"
 
     healthcheck:
-      test: ["CMD", "/bin/sh", "-c", "curl -f -s http://127.0.0.1 >/dev/null 2>&1"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
-      
+      start_period: 180s
+
     deploy:
       resources:
         reservations:
@@ -50,10 +55,12 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
     command: >
       --model ${MODEL_PATH}
       --port 8000
       --max-model-len ${MAX_MODEL_LEN}
+      
     networks:
       - ai-network
 
@@ -64,8 +71,9 @@ services:
     build:
       context: .
       dockerfile: dockerfile.chat-ui
-    container_name: python_chat_ui
+    container_name: python_chat_ui_vllm
     restart: unless-stopped
+    init: true
     ports:
       - "8080:8080"
     environment:
@@ -98,6 +106,9 @@ networks:
 # 1. Clean out your previous layout cache blocks and build images
 # docker compose build --no-cache
 
+# Check what Docker Compose actually resolves
+# docker compose config
+
 # 2. Spin up the cluster infrastructure in background isolation
 # docker compose up -d --force-recreate
 
@@ -107,5 +118,13 @@ networks:
 # 4. (Optional Optimization) Verify NVIDIA hardware scheduling and utilization metrics inside vLLM
 # docker exec -it vllm_gpu nvidia-smi
 
-# 5. Pull the model into your GPU server volume
-# docker exec -it vllm_gpu ollama pull qwen2.5-coder:1.5b
+# 5. Pull the model into your GPU server volume (ensure that the dockerfile_vllm_downloader image is build already)
+#docker run --rm `
+#  --dns 8.8.8.8 `
+#  --dns 8.8.4.4 `
+#  -v "${PWD}/my_models:/download" `
+#  -e MODEL_NAME="Qwen/Qwen2.5-Coder-1.5B-Instruct" `
+#  dockerfile_vllm_downloader
+
+# Models
+# https://huggingface.co/models
