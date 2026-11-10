@@ -2,18 +2,18 @@ FROM python:3.11-slim
 
 WORKDIR /download
 
-# Install the huggingface hub utility cleanly
-RUN pip install --no-cache-dir "huggingface_hub[cli]"
+RUN pip install --no-cache-dir huggingface_hub
 
-# Default environment variables that you can override at runtime
+# Override at runtime
 ENV MODEL_NAME=""
 
-# FIX: Calling the module directly via python -m ensures it is ALWAYS found
-CMD sh -c "if [ -z \"\$MODEL_NAME\" ]; then echo '❌ Error: MODEL_NAME environment variable is not set!'; exit 1; fi; \
-    echo '🚀 Starting download for: '\$MODEL_NAME && \
-    hf_name=\$(echo \$MODEL_NAME | awk -F/ '{print \$NF}') && \
-    python -m huggingface_hub.cli.huggingface_cli download \$MODEL_NAME --local-dir /download/\$hf_name"
+# Expose /download as a volume so files persist on your host machine
+VOLUME /download
 
+CMD ["sh", "-c", "if [ -z \"$MODEL_NAME\" ]; then echo 'Error: MODEL_NAME environment variable is not set!'; exit 1; fi; \
+    echo 'Starting download for: '$MODEL_NAME && \
+    hf_name=$(echo $MODEL_NAME | awk -F/ '{print $NF}') && \
+    python -c \"from huggingface_hub import snapshot_download; snapshot_download(repo_id='$MODEL_NAME', local_dir='/download/$hf_name')\""]
 
 
 # Build command:
@@ -21,6 +21,8 @@ CMD sh -c "if [ -z \"\$MODEL_NAME\" ]; then echo '❌ Error: MODEL_NAME environm
 
 # Run and download model
 #docker run --rm `
+#  --dns 8.8.8.8 `
+#  --dns 8.8.4.4 `
 #  -v "${PWD}/my_models:/download" `
 #  -e MODEL_NAME="Qwen/Qwen2.5-Coder-1.5B-Instruct" `
 #  dockerfile_vllm_downloader
